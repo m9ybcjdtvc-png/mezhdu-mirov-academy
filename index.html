@@ -112,7 +112,6 @@ function openAuth(next='login',admin=false){
   if(mode==='signup' && !adminMode) intro.textContent='Создайте аккаунт ученика — после регистрации вы сможете войти в кабинет.';
   nameInput.style.display=(mode==='login'||adminMode)?'none':'block';
   nameInput.required=mode!=='login'&&!adminMode;
-  nameInput.required=mode!=='login';
   submit.textContent=mode==='login'?'Войти':'Зарегистрироваться';
   switchBtn.textContent=adminMode?'Вход владельца':(mode==='login'?'Регистрация':'Уже есть аккаунт');
   switchBtn.style.display=adminMode?'none':'inline-block';
@@ -166,11 +165,17 @@ form.onsubmit=async(e)=>{
       });
       if(error) throw error;
       if(adminMode){
-        if((data.user.app_metadata?.role||'')!=='admin'){
-          await supabase.auth.signOut();
-          throw new Error('Этот аккаунт не имеет доступа к управлению академией.');
+        const {data:ownerProfile,error:ownerProfileError}=await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id',data.user.id)
+          .maybeSingle();
+        if(ownerProfileError) throw ownerProfileError;
+        if(ownerProfile?.role!=='admin'){
+          throw new Error('Доступ владельца не настроен для этого аккаунта.');
         }
-        closeAuth(); await loadAdmin(data.user);
+        closeAuth();
+        await loadAdmin(data.user);
       }else{
         closeAuth(); await loadCabinet(data.user);
       }
@@ -216,9 +221,15 @@ async function loadCabinet(user){
 }
 document.getElementById('logoutBtn').onclick=async()=>{await supabase.auth.signOut();document.getElementById('cabinetPanel').classList.remove('show');accountBtn.textContent='Войти';window.scrollTo({top:0,behavior:'smooth'})};
 
-supabase.auth.onAuthStateChange(async(event,session)=>{
-  if(session){accountBtn.textContent='Кабинет'; if(event==='SIGNED_IN' && (session.user.app_metadata?.role||'')==='admin') adminBtn.textContent='Владелец ✓'; else if(event==='SIGNED_IN') await loadCabinet(session.user)}
-  else {accountBtn.textContent='Войти';adminBtn.textContent='Владелец';document.getElementById('adminPanel').style.display='none';}
+supabase.auth.onAuthStateChange((event,session)=>{
+  if(session){
+    accountBtn.textContent='Кабинет';
+    if(event==='SIGNED_IN' && (session.user.app_metadata?.role||'')==='admin') adminBtn.textContent='Владелец ✓';
+  }else{
+    accountBtn.textContent='Войти';
+    adminBtn.textContent='Владелец';
+    document.getElementById('adminPanel').style.display='none';
+  }
 });
 const {data:{session}}=await supabase.auth.getSession();
 if(new URLSearchParams(location.search).get('reset')==='1'){
@@ -226,7 +237,11 @@ if(new URLSearchParams(location.search).get('reset')==='1'){
   intro.textContent='Введите новый пароль после перехода по ссылке восстановления.';
   passwordInput.focus();
 }
-if(session){ if((session.user.app_metadata?.role||'')==='admin') adminBtn.textContent='Управление ✓'; else await loadCabinet(session.user); }
+if(session){
+  const {data:profile}=await supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
+  if(profile?.role==='admin') adminBtn.textContent='Владелец ✓';
+  else await loadCabinet(session.user);
+}
 </script>
 </body>
 </html>
