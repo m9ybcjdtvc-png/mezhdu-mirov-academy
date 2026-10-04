@@ -158,7 +158,7 @@ form.onsubmit=async(e)=>{
     }else{
       const identifier=emailInput.value.trim();
       const normalizedPhone=identifier.replace(/\D/g,'');
-      if(adminMode && normalizedPhone!=='89002739445' && normalizedPhone!== '79002739445') throw new Error('Введите номер владельца.');
+      if(adminMode && !normalizedPhone) throw new Error('Введите номер телефона владельца.');
       const loginEmail=adminMode?'kislyak.vova2004@mail.ru':identifier;
       const {data,error}=await supabase.auth.signInWithPassword({
         email:loginEmail,password:passwordInput.value
