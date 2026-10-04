@@ -28,7 +28,10 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
 .authActions{display:flex;gap:10px;margin-top:12px}.authActions button{flex:1}.authMsg{min-height:20px;color:var(--gold);font-size:12px;margin-top:12px}
 .cabinetPanel{display:none;margin-top:28px}.cabinetPanel.show{display:block}.cabHead{display:flex;justify-content:space-between;align-items:center;gap:15px;border-bottom:1px solid var(--line);padding-bottom:18px}.cabGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:20px}.cabCard{background:var(--paper);border:1px solid var(--line);padding:24px}.cabCard h4{font:22px Georgia;margin:8px 0}.cabCard p{color:var(--muted);font-size:13px;line-height:1.55}.miniBtn{border:1px solid var(--line);background:transparent;padding:9px 12px;cursor:pointer;font-size:12px}
 @media(max-width:800px){.cabGrid{grid-template-columns:1fr}.authBtn{display:none}}
-</style></style>
+<style>
+.accountHero{margin-top:35px;background:linear-gradient(135deg,#fffdfa,#eee5da);border:1px solid var(--line);padding:34px}.accountTop{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}.accountLabel{font-size:10px;letter-spacing:2.5px;color:var(--gold);text-transform:uppercase}.accountName{font:32px Georgia;margin:8px 0}.accountEmail{font-size:13px;color:var(--muted)}.accountStats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}.stat{background:rgba(255,255,255,.55);border:1px solid var(--line);padding:20px}.stat strong{display:block;font:27px Georgia}.stat span{display:block;color:var(--muted);font-size:11px;margin-top:5px}.emptyCourse{min-height:230px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;background:#faf6f0;border:1px dashed #d7cabb;padding:28px}.emptyCourse h4{font:25px Georgia;margin:8px 0}.emptyCourse p{color:var(--muted);line-height:1.6;font-size:13px;max-width:560px}.profileBox{margin-top:18px;background:var(--paper);border:1px solid var(--line);padding:25px}.profileBox h4{font:22px Georgia;margin:0 0 14px}.profileRow{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}.profileRow span:last-child{color:var(--muted)}
+@media(max-width:800px){.accountTop{display:block}.accountStats{grid-template-columns:1fr}.stat{display:flex;justify-content:space-between;align-items:center}}
+</style></style></style>
 </head>
 <body>
 <header class="nav"><div class="wrap navin"><a class="logo" href="#">МЕЖДУ МИРОВ<small>ОНЛАЙН-АКАДЕМИЯ КОСМЕТОЛОГИИ</small></a><nav class="links"><a href="#courses">Курсы</a><a href="#method">Методика</a><a href="#cabinet">Кабинет</a><a href="#faq">FAQ</a></nav><div style="display:flex;gap:10px;align-items:center"><a class="btn" href="#courses">Выбрать курс</a><button class="authBtn" id="accountBtn">Войти</button></div></div></header>
@@ -47,9 +50,20 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
 <section id="method" class="steps"><div class="wrap"><div class="eyebrow">Методология</div><h2 class="title">Обучение, которое удобно встроить в работу</h2><div class="step"><b>01</b><div><h3>Выбираете программу</h3><p>Выбираете курс и оформляете оплату.</p></div></div><div class="step"><b>02</b><div><h3>Смотрите уроки 15–30 минут</h3><p>Короткие видеоуроки удобно смотреть с телефона, планшета или компьютера.</p></div></div><div class="step"><b>03</b><div><h3>Закрепляете знания по модулям</h3><p>Материалы и прогресс обучения будут собраны в личном кабинете.</p></div></div><div class="step"><b>04</b><div><h3>Получаете сертификат</h3><p>После прохождения программы сертификат формируется в личном кабинете.</p></div></div></div></section>
 <section id="cabinet"><div class="wrap"><div class="heroGrid"><div><div class="eyebrow">Личный кабинет</div><h2 class="title">Ваше обучение — всегда под рукой</h2><p class="sub">Архитектура платформы подготовлена для защищённых видео, прогресса обучения, материалов и сертификатов.</p><a class="btn" href="#courses">Начать обучение</a></div><div class="card"><span class="num">МОИ КУРСЫ</span><h3>Контурная пластика</h3><p>Модуль 3 из 5</p><div style="height:8px;background:#e8dfd5;margin:18px 0"><div style="height:100%;width:68%;background:#b79b69"></div></div><p>Прогресс · 68%</p></div></div></div>
 <div id="cabinetPanel" class="cabinetPanel">
-  <div class="cabHead"><div><div class="eyebrow">ВАШ ПРОФИЛЬ</div><h2 id="cabinetTitle" class="title">Личный кабинет</h2><p id="cabinetIntro" class="sub"></p></div><button id="logoutBtn" class="miniBtn">Выйти</button></div>
-  <div id="cabinetCards" class="cabGrid"></div>
-  <div style="margin-top:28px"><div class="eyebrow">ДОКУМЕНТЫ</div><h3 style="font:26px Georgia">Сертификаты</h3><div id="certificates" class="cabGrid"></div></div>
+  <div class="accountHero">
+    <div class="accountTop">
+      <div><div class="accountLabel">Личный кабинет · МЕЖДУ МИРОВ</div><div class="accountName" id="cabinetTitle">Добро пожаловать</div><div class="accountEmail" id="cabinetIntro"></div></div>
+      <button id="logoutBtn" class="miniBtn">Выйти</button>
+    </div>
+    <div class="accountStats">
+      <div class="stat"><strong id="courseCount">0</strong><span>активных курсов</span></div>
+      <div class="stat"><strong>0%</strong><span>средний прогресс</span></div>
+      <div class="stat"><strong id="certificateCount">0</strong><span>сертификатов</span></div>
+    </div>
+  </div>
+  <div style="margin-top:42px"><div class="eyebrow">МОЁ ОБУЧЕНИЕ</div><h3 style="font:30px Georgia;margin:10px 0 18px">Мои курсы</h3><div id="cabinetCards" class="cabGrid"></div></div>
+  <div style="margin-top:42px"><div class="eyebrow">ДОКУМЕНТЫ</div><h3 style="font:30px Georgia;margin:10px 0 18px">Сертификаты</h3><div id="certificates" class="cabGrid"></div></div>
+  <div class="profileBox"><div class="eyebrow">ПРОФИЛЬ</div><h4>Данные аккаунта</h4><div class="profileRow"><span>Имя</span><span id="profileName">—</span></div><div class="profileRow"><span>Email</span><span id="profileEmail">—</span></div></div>
 </div></div></div></section>
 <div class="cta"><div class="wrap"><div class="eyebrow">МЕЖДУ МИРОВ</div><h2 class="title">Начните обучение<br>с подходящей программы.</h2><p>Доступ к обучению открывается после подтверждения оплаты. Инъекционные и аппаратные методики должны выполняться только в соответствии с законодательством и квалификационными требованиями вашей страны.</p><a class="btn" href="#courses">Выбрать программу</a></div></div>
 <section id="faq"><div class="wrap faq"><div class="eyebrow">FAQ</div><h2 class="title">Частые вопросы</h2><div class="q"><b>Можно ли учиться с телефона?</b><p>Да. Сайт адаптирован под мобильные устройства.</p></div><div class="q"><b>Когда открывается доступ?</b><p>В полноценной версии доступ к оплаченной программе открывается автоматически после подтверждения платежа.</p></div><div class="q"><b>Есть ли сертификат?</b><p>Да, в личном кабинете предусмотрена выдача сертификата после прохождения программы.</p></div><div class="q"><b>Можно ли купить курс из другой страны?</b><p>Сейчас академия работает для России. Международную версию можно подключить позже.</p></div></div></section>
@@ -149,11 +163,11 @@ async function loadCabinet(user){
   let courses=[];
   if(ids.length){const r=await supabase.from('courses').select('id,title,level,description').in('id',ids).eq('published',true);courses=r.data||[]}
   const {data:certs}=await supabase.from('certificates').select('id,course_id,certificate_number,issued_at').eq('user_id',user.id);
-  document.getElementById('cabinetCards').innerHTML = courses.length ? courses.map(c=>{
+  document.getElementById('courseCount').textContent=courses.length;document.getElementById('certificateCount').textContent=(certs||[]).length;document.getElementById('profileName').textContent=(profile?.full_name||'Не указано');document.getElementById('cabinetCards').innerHTML = courses.length ? courses.map(c=>{
     const e=(enrollments||[]).find(x=>x.course_id===c.id);
     return '<article class="cabCard"><span class="num">'+esc(c.level||'КУРС')+'</span><h4>'+esc(c.title)+'</h4><p>'+esc(c.description||'Доступ к обучению активен.')+'</p><p><b>Статус:</b> доступ открыт</p><button class="miniBtn" data-course="'+c.id+'">Открыть курс</button></article>'
-  }).join('') : '<article class="cabCard"><span class="num">МОИ КУРСЫ</span><h4>Пока нет оплаченных программ</h4><p>После подтверждения оплаты курс появится здесь автоматически.</p><a class="btn" href="#courses">Выбрать программу</a></article>';
-  document.getElementById('certificates').innerHTML = certs?.length ? certs.map(x=>'<div class="cabCard"><span class="num">СЕРТИФИКАТ</span><h4>'+esc(x.certificate_number)+'</h4><p>Выдан: '+new Date(x.issued_at).toLocaleDateString('ru-RU')+'</p></div>').join('') : '<div class="cabCard"><h4>Сертификаты</h4><p>После прохождения программы сертификат появится здесь.</p></div>';
+  }).join('') : '<div class="emptyCourse"><span class="num">ОБУЧЕНИЕ</span><h4>Ваш первый курс появится здесь</h4><p>Сейчас программы находятся в подготовке. Как только будет опубликован первый курс и подтверждена оплата, он автоматически появится в этом разделе.</p><a class="btn" href="#courses">Узнать о запуске</a></div>';
+  document.getElementById('certificates').innerHTML = certs?.length ? certs.map(x=>'<div class="cabCard"><span class="num">СЕРТИФИКАТ</span><h4>'+esc(x.certificate_number)+'</h4><p>Выдан: '+new Date(x.issued_at).toLocaleDateString('ru-RU')+'</p></div>').join('') : '<div class="emptyCourse"><span class="num">СЕРТИФИКАТЫ</span><h4>Пока сертификатов нет</h4><p>После завершения обучения сертификат будет доступен в вашем личном кабинете.</p></div>';
   document.getElementById('cabinetPanel').classList.add('show');
   accountBtn.textContent='Кабинет';
 }
