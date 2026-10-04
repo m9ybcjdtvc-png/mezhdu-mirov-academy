@@ -466,6 +466,7 @@ async function loadMasterTasks(){
   const summary=document.getElementById('masterTaskSummary');
   if(!box) return;
   const {data:{user}}=await supabase.auth.getUser();
+  if(user){ const {data:prof}=await supabase.from('profiles').select('full_name').eq('id',user.id).maybeSingle(); const nm=document.getElementById('masterProfileName'); if(nm)nm.textContent=(prof?.full_name||'Ваш профессиональный профиль'); await supabase.from('master_profiles').upsert({user_id:user.id},{onConflict:'user_id',ignoreDuplicates:true}); }
   if(!user){box.innerHTML='<div class="adminNotice">Войдите в кабинет, чтобы открыть MASTER.</div>';return}
   const {data:tasks,error}=await supabase.from('master_assignments').select('id,title,description,position,due_at').eq('published',true).order('position',{ascending:true});
   if(error){box.innerHTML='<div class="adminNotice">Не удалось загрузить задания: '+esc(error.message)+'</div>';return}
