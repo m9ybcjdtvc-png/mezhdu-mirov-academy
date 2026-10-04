@@ -129,7 +129,7 @@ accountBtn.onclick=async()=>{
 };
 document.getElementById('authClose').onclick=closeAuth;
 adminBtn.onclick=()=>openAuth('login',true);
-switchBtn.onclick=()=>openAuth(mode==='login'?'signup':'login');
+switchBtn.onclick=()=>{ if(adminMode) return; openAuth(mode==='login'?'signup':'login'); };
 modal.addEventListener('click',e=>{if(e.target===modal)closeAuth()});
 forgotBtn.onclick=async()=>{
   const email=emailInput.value.trim();
