@@ -67,7 +67,7 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
     <form class="authForm" id="authForm">
       <input id="authName" type="text" placeholder="Имя" autocomplete="name" style="display:none">
       <input id="authEmail" type="text" placeholder="Email или номер телефона" autocomplete="email tel" required>
-      <input id="authPassword" type="password" placeholder="Пароль" autocomplete="current-password" minlength="6" required>
+      <input id="authPassword" type="password" placeholder="Пароль" autocomplete="current-password" minlength="6" required>\n      <input id="authOtp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Код из SMS" style="display:none">\n      <div id="authOtpHint" class="authMsg" style="display:none">Введите код из SMS, чтобы подтвердить номер телефона.</div>
       <div class="authActions">
         <button class="btn" type="submit" id="authSubmit">Войти</button>
         <button class="miniBtn" type="button" id="authSwitch" style="display:none">Регистрация</button>
@@ -86,7 +86,7 @@ const supabase = createClient(
 
 const modal=document.getElementById('authModal');
 const adminBtn=document.getElementById('adminBtn');
-let adminMode=false;
+let adminMode=false;\nlet phoneOtpPending=false;
 const accountBtn=document.getElementById('accountBtn');
 const form=document.getElementById('authForm');
 const title=document.getElementById('authTitle');
@@ -97,7 +97,7 @@ const passwordInput=document.getElementById('authPassword');
 const submit=document.getElementById('authSubmit');
 const switchBtn=document.getElementById('authSwitch');
 const forgotBtn=document.getElementById('forgotBtn');
-const msg=document.getElementById('authMsg');
+const msg=document.getElementById('authMsg');\nconst otpInput=document.getElementById('authOtp');\nconst otpHint=document.getElementById('authOtpHint');
 let mode='login';
 
 function openAuth(next='login',admin=false){
@@ -159,7 +159,7 @@ form.onsubmit=async(e)=>{
           options:{data:{full_name:nameInput.value.trim()}}
         });
         if(error) throw error;
-        msg.textContent='Аккаунт создан. Если подтверждение телефона включено, введите код из SMS, затем войдите.';
+        phoneOtpPending=true;\n        otpInput.style.display='block'; otpHint.style.display='block';\n        otpInput.focus();\n        submit.textContent='Подтвердить телефон';\n        msg.textContent='SMS с кодом отправлено. Введите код и подтвердите номер.';
       }else{
         const {error}=await supabase.auth.signUp({
           email:identifier,
