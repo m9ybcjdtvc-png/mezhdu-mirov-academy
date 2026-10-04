@@ -70,7 +70,7 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
       <input id="authPassword" type="password" placeholder="Пароль" autocomplete="current-password" minlength="6" required>
       <div class="authActions">
         <button class="btn" type="submit" id="authSubmit">Войти</button>
-        <button class="miniBtn" type="button" id="authSwitch">Регистрация</button>
+        <button class="miniBtn" type="button" id="authSwitch" style="display:none">Регистрация</button>
       </div>
       <button class="miniBtn" type="button" id="forgotBtn" style="margin-top:10px;width:100%">Восстановить пароль</button><div class="authMsg" id="authMsg"></div>
     </form>
@@ -115,6 +115,7 @@ function openAuth(next='login',admin=false){
   nameInput.required=mode!=='login';
   submit.textContent=mode==='login'?'Войти':'Зарегистрироваться';
   switchBtn.textContent=adminMode?'Вход владельца':(mode==='login'?'Регистрация':'Уже есть аккаунт');
+  switchBtn.style.display=adminMode?'none':'inline-block';
   forgotBtn.style.display=mode==='login'&&!adminMode?'block':'none';
   msg.textContent='';
   modal.classList.add('show');
@@ -158,7 +159,7 @@ form.onsubmit=async(e)=>{
     }else{
       const identifier=emailInput.value.trim();
       const normalizedPhone=identifier.replace(/\D/g,'');
-      if(adminMode && !normalizedPhone) throw new Error('Введите номер телефона владельца.');
+      if(adminMode && normalizedPhone.length < 10) throw new Error('Введите полный номер телефона владельца.');
       const loginEmail=adminMode?'kislyak.vova2004@mail.ru':identifier;
       const {data,error}=await supabase.auth.signInWithPassword({
         email:loginEmail,password:passwordInput.value
