@@ -67,7 +67,8 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
     <form class="authForm" id="authForm">
       <input id="authName" type="text" placeholder="Имя" autocomplete="name" style="display:none">
       <input id="authEmail" type="text" placeholder="Email или номер телефона" autocomplete="email tel" required>
-      <input id="authPassword" type="password" placeholder="Пароль" autocomplete="current-password" minlength="6" required>\n            <div class="authActions">
+      <input id="authPassword" type="password" placeholder="Пароль" autocomplete="current-password" minlength="6" required>
+            <div class="authActions">
         <button class="btn" type="submit" id="authSubmit">Войти</button>
         <button class="miniBtn" type="button" id="authSwitch" style="display:none">Регистрация</button>
       </div>
@@ -85,7 +86,8 @@ const supabase = createClient(
 
 const modal=document.getElementById('authModal');
 const adminBtn=document.getElementById('adminBtn');
-let adminMode=false;\nconst accountBtn=document.getElementById('accountBtn');
+let adminMode=false;
+const accountBtn=document.getElementById('accountBtn');
 const form=document.getElementById('authForm');
 const title=document.getElementById('authTitle');
 const intro=document.getElementById('authIntro');
@@ -95,7 +97,9 @@ const passwordInput=document.getElementById('authPassword');
 const submit=document.getElementById('authSubmit');
 const switchBtn=document.getElementById('authSwitch');
 const forgotBtn=document.getElementById('forgotBtn');
-const msg=document.getElementById('authMsg');\nconst otpInput=document.getElementById('authOtp');\nconst otpHint=document.getElementById('authOtpHint');
+const msg=document.getElementById('authMsg');
+const otpInput=document.getElementById('authOtp');
+const otpHint=document.getElementById('authOtpHint');
 let mode='login';
 
 function openAuth(next='login',admin=false){
