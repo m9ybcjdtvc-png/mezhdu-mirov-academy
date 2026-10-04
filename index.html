@@ -66,7 +66,7 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
     <p id="authIntro">Войдите, чтобы открыть личный кабинет и видеть своё обучение.</p>
     <form class="authForm" id="authForm">
       <input id="authName" type="text" placeholder="Имя" autocomplete="name" style="display:none">
-      <input id="authEmail" type="email" placeholder="Email" autocomplete="email" required>
+      <input id="authEmail" type="text" placeholder="Email" autocomplete="email" required>
       <input id="authPassword" type="password" placeholder="Пароль" autocomplete="current-password" minlength="6" required>
       <div class="authActions">
         <button class="btn" type="submit" id="authSubmit">Войти</button>
@@ -104,13 +104,18 @@ function openAuth(next='login',admin=false){
   adminMode=admin;
   mode=next;
   title.textContent=mode==='login'?'Войти':'Создать аккаунт';
+  emailInput.type=adminMode?'tel':'email';
+  emailInput.placeholder=adminMode?'Номер телефона':'Email';
+  emailInput.autocomplete=adminMode?'tel':'email';
+  emailInput.value='';
   intro.textContent=adminMode?'Вход владельца по номеру телефона и паролю.':'Войдите, чтобы открыть личный кабинет и видеть своё обучение.';
   if(mode==='signup' && !adminMode) intro.textContent='Создайте аккаунт ученика — после регистрации вы сможете войти в кабинет.';
-  nameInput.style.display=mode==='login'?'none':'block';
+  nameInput.style.display=(mode==='login'||adminMode)?'none':'block';
+  nameInput.required=mode!=='login'&&!adminMode;
   nameInput.required=mode!=='login';
   submit.textContent=mode==='login'?'Войти':'Зарегистрироваться';
   switchBtn.textContent=adminMode?'Вход владельца':(mode==='login'?'Регистрация':'Уже есть аккаунт');
-  forgotBtn.style.display=mode==='login'?'block':'none';
+  forgotBtn.style.display=mode==='login'&&!adminMode?'block':'none';
   msg.textContent='';
   modal.classList.add('show');
 }
