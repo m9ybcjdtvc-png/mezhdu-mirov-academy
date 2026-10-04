@@ -69,8 +69,22 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
  .heroHighlights span{font-size:8px;padding:8px 9px}
  .luxuryIntro h2{font-size:39px}
 }
+</style><style>
+/* Subtle luxury light sparkles */
+.screenSparkles{position:fixed;inset:0;pointer-events:none;z-index:20;overflow:hidden}
+.screenSparkles i{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff7dc;box-shadow:0 0 7px 2px rgba(216,184,111,.55),0 0 18px 5px rgba(255,244,201,.25);opacity:0;animation:sparkleFlash 5.8s ease-in-out infinite}
+.screenSparkles i:nth-child(1){left:8%;top:24%;animation-delay:.4s}
+.screenSparkles i:nth-child(2){left:23%;top:67%;animation-delay:2.1s}
+.screenSparkles i:nth-child(3){left:42%;top:15%;animation-delay:3.6s}
+.screenSparkles i:nth-child(4){left:58%;top:78%;animation-delay:1.3s}
+.screenSparkles i:nth-child(5){left:76%;top:29%;animation-delay:4.2s}
+.screenSparkles i:nth-child(6){left:91%;top:61%;animation-delay:2.8s}
+.screenSparkles i:nth-child(7){left:68%;top:48%;animation-delay:5s}
+.screenSparkles i:nth-child(8){left:34%;top:88%;animation-delay:3s}
+@keyframes sparkleFlash{0%,78%,100%{opacity:0;transform:scale(.4)}82%{opacity:.2;transform:scale(.8)}85%{opacity:1;transform:scale(1.7)}89%{opacity:.25;transform:scale(.7)}94%{opacity:0;transform:scale(.4)}}
+@media(prefers-reduced-motion:reduce){.screenSparkles{display:none}}
 </style></head>
-<body>
+<body><div class="screenSparkles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <header class="nav"><div class="wrap navin"><a class="logo" href="#">МЕЖДУ МИРОВ<small>ОНЛАЙН-АКАДЕМИЯ КОСМЕТОЛОГИИ</small></a><nav class="links"><a href="#courses">Курсы</a><a href="#method">Методика</a><a href="#cabinet">Кабинет</a><a href="#faq">FAQ</a></nav><div style="display:flex;gap:10px;align-items:center"><a class="btn" href="#courses">Выбрать курс</a><button class="authBtn" id="accountBtn">Войти</button><button class="authBtn" id="adminBtn">Владелец</button></div></div></header>
 <main class="gold-vein-bg"><section id="stories" class="storiesBar"><div class="wrap"><div class="storiesHead"><div><div class="eyebrow">МЕЖДУ МИРОВ · STORIES</div><h2>Работы академии</h2></div><span class="adminNotice">Новые кейсы · работы · атмосфера обучения</span></div><div id="publicStories" class="storyRail"></div></div></section>
 <section class="hero"><div class="wrap heroGrid"><div class="heroCopy"><div class="heroKicker"><div class="eyebrow">МЕЖДУ МИРОВ · PREMIUM BEAUTY ACADEMY</div></div><h1>Знания,<br><em>которые меняют</em><br>профессию.</h1><p class="heroLead">Современная академия косметологии для тех, кто выбирает не просто обучение, а высокий профессиональный стандарт.</p><div class="heroMeta"><div><b>01</b><span>Система</span></div><div><b>02</b><span>Практика</span></div><div><b>03</b><span>Результат</span></div></div><div class="heroHighlights"><span>Авторская методика</span><span>Пошаговая практика</span><span>Премиальный формат</span></div><a class="btn" href="#courses">Открыть академию</a></div><div class="heroCard"><div class="heroTag">Beauty · Education · Premium</div><div class="heroOrb heroOrbOne"></div><div class="heroOrb heroOrbTwo"></div><div class="portrait"><div class="portraitGrid"><figure><img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=1000&q=90" alt="Профессиональная beauty-модель"></figure><figure><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&q=90" alt="Профессиональная beauty-модель"></figure></div><span>Профессиональная эстетика · Практика</span></div><div class="heroSeal">EST.<br>BEAUTY<br>ACADEMY</div></div></div></section>
