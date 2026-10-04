@@ -67,8 +67,7 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
     <form class="authForm" id="authForm">
       <input id="authName" type="text" placeholder="Имя" autocomplete="name" style="display:none">
       <input id="authEmail" type="text" placeholder="Email или номер телефона" autocomplete="email tel" required>
-      <input id="authPassword" type="password" placeholder="Пароль" autocomplete="current-password" minlength="6" required>\n      <input id="authOtp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Код из SMS" style="display:none">\n      <div id="authOtpHint" class="authMsg" style="display:none">Введите код из SMS, чтобы подтвердить номер телефона.</div>
-      <div class="authActions">
+      <input id="authPassword" type="password" placeholder="Пароль" autocomplete="current-password" minlength="6" required>\n            <div class="authActions">
         <button class="btn" type="submit" id="authSubmit">Войти</button>
         <button class="miniBtn" type="button" id="authSwitch" style="display:none">Регистрация</button>
       </div>
@@ -86,8 +85,7 @@ const supabase = createClient(
 
 const modal=document.getElementById('authModal');
 const adminBtn=document.getElementById('adminBtn');
-let adminMode=false;\nlet phoneOtpPending=false;
-const accountBtn=document.getElementById('accountBtn');
+let adminMode=false;\nconst accountBtn=document.getElementById('accountBtn');
 const form=document.getElementById('authForm');
 const title=document.getElementById('authTitle');
 const intro=document.getElementById('authIntro');
@@ -150,16 +148,7 @@ form.onsubmit=async(e)=>{
       const identifier=emailInput.value.trim();
       const isPhone=!identifier.includes('@');
       if(isPhone){
-        const phone=identifier.replace(/[^\d+]/g,'');
-        const normalizedPhone=phone.startsWith('+')?phone:'+'+phone;
-        if(!/^\+[1-9]\d{7,14}$/.test(normalizedPhone)) throw new Error('Введите номер телефона в международном формате, например +7 999 123-45-67.');
-        const {data,error}=await supabase.auth.signUp({
-          phone:normalizedPhone,
-          password:passwordInput.value,
-          options:{data:{full_name:nameInput.value.trim()}}
-        });
-        if(error) throw error;
-        phoneOtpPending=true;\n        otpInput.style.display='block'; otpHint.style.display='block';\n        otpInput.focus();\n        submit.textContent='Подтвердить телефон';\n        msg.textContent='SMS с кодом отправлено. Введите код и подтвердите номер.';
+        throw new Error('Регистрация ученика сейчас доступна по email и паролю. Телефон можно добавить в профиле.');
       }else{
         const {error}=await supabase.auth.signUp({
           email:identifier,
