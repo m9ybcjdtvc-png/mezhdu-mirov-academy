@@ -72,7 +72,7 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
         <button class="btn" type="submit" id="authSubmit">Войти</button>
         <button class="miniBtn" type="button" id="authSwitch">Регистрация</button>
       </div>
-      <div class="authMsg" id="authMsg"></div>
+      <button class="miniBtn" type="button" id="forgotBtn" style="margin-top:10px;width:100%">Восстановить пароль</button><div class="authMsg" id="authMsg"></div>
     </form>
     <button class="miniBtn" type="button" id="authClose">Закрыть</button>
   </div>
@@ -96,6 +96,7 @@ const emailInput=document.getElementById('authEmail');
 const passwordInput=document.getElementById('authPassword');
 const submit=document.getElementById('authSubmit');
 const switchBtn=document.getElementById('authSwitch');
+const forgotBtn=document.getElementById('forgotBtn');
 const msg=document.getElementById('authMsg');
 let mode='login';
 
@@ -109,6 +110,7 @@ function openAuth(next='login',admin=false){
   nameInput.required=mode!=='login';
   submit.textContent=mode==='login'?'Войти':'Зарегистрироваться';
   switchBtn.textContent=adminMode?'Вход владельца':(mode==='login'?'Регистрация':'Уже есть аккаунт');
+  forgotBtn.style.display=mode==='login'?'block':'none';
   msg.textContent='';
   modal.classList.add('show');
 }
@@ -124,6 +126,17 @@ document.getElementById('authClose').onclick=closeAuth;
 adminBtn.onclick=()=>openAuth('signup',true);
 switchBtn.onclick=()=>openAuth(mode==='login'?'signup':'login');
 modal.addEventListener('click',e=>{if(e.target===modal)closeAuth()});
+forgotBtn.onclick=async()=>{
+  const email=emailInput.value.trim();
+  if(!email){msg.textContent='Сначала укажите email.';return;}
+  forgotBtn.disabled=true; msg.textContent='Отправляю ссылку для восстановления…';
+  try{
+    const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname+'?reset=1'});
+    if(error) throw error;
+    msg.textContent='Если аккаунт существует, ссылка для восстановления отправлена на email.';
+  }catch(err){msg.textContent=err.message||'Не удалось отправить ссылку.'}
+  finally{forgotBtn.disabled=false}
+};
 
 form.onsubmit=async(e)=>{
   e.preventDefault(); msg.textContent='Подождите…'; submit.disabled=true;
@@ -198,6 +211,11 @@ supabase.auth.onAuthStateChange(async(event,session)=>{
   else {accountBtn.textContent='Войти';adminBtn.textContent='Управление';document.getElementById('adminPanel').style.display='none';}
 });
 const {data:{session}}=await supabase.auth.getSession();
+if(new URLSearchParams(location.search).get('reset')==='1'){
+  openAuth('login',false);
+  intro.textContent='Введите новый пароль после перехода по ссылке восстановления.';
+  passwordInput.focus();
+}
 if(session){ if((session.user.app_metadata?.role||'')==='admin') adminBtn.textContent='Управление ✓'; else await loadCabinet(session.user); }
 </script>
 </body>
