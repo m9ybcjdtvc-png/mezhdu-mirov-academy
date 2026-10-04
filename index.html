@@ -103,12 +103,12 @@ function openAuth(next='login',admin=false){
   adminMode=admin;
   mode=next;
   title.textContent=mode==='login'?'Войти':'Создать аккаунт';
-  intro.textContent=adminMode?'Вход только для владельца академии.':'Войдите, чтобы открыть личный кабинет и видеть своё обучение.';
-  if(mode==='signup') intro.textContent='Создайте аккаунт ученика — после регистрации вы сможете войти в кабинет.';
+  intro.textContent=adminMode?'Первый вход владельца: создайте аккаунт с email kislyak.vova2004@mail.ru. После регистрации доступ к управлению назначится автоматически.':'Войдите, чтобы открыть личный кабинет и видеть своё обучение.';
+  if(mode==='signup' && !adminMode) intro.textContent='Создайте аккаунт ученика — после регистрации вы сможете войти в кабинет.';
   nameInput.style.display=mode==='login'?'none':'block';
   nameInput.required=mode!=='login';
   submit.textContent=mode==='login'?'Войти':'Зарегистрироваться';
-  switchBtn.textContent=mode==='login'?'Регистрация':'Уже есть аккаунт';
+  switchBtn.textContent=adminMode?'Вход владельца':(mode==='login'?'Регистрация':'Уже есть аккаунт');
   msg.textContent='';
   modal.classList.add('show');
 }
@@ -121,7 +121,7 @@ accountBtn.onclick=async()=>{
   else openAuth('login');
 };
 document.getElementById('authClose').onclick=closeAuth;
-adminBtn.onclick=()=>openAuth('login',true);
+adminBtn.onclick=()=>openAuth('signup',true);
 switchBtn.onclick=()=>openAuth(mode==='login'?'signup':'login');
 modal.addEventListener('click',e=>{if(e.target===modal)closeAuth()});
 
