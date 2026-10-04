@@ -51,6 +51,8 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
 .masterProfileGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:18px}.masterMetric{padding:14px;background:#f5efe6;border:1px solid var(--line)}.masterMetric b{display:block;font:19px Georgia;margin-top:5px}.masterMetric span{font-size:9px;letter-spacing:1.3px;color:var(--muted)}
 .masterBadges{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.masterBadge{padding:8px 10px;border:1px solid var(--gold2);font-size:9px;letter-spacing:1.2px;color:#8b6c3d;background:#fcf8f0}
 @media(max-width:700px){.masterProfileHead{display:block}.masterProfile .profileStatus{display:inline-block;margin-top:10px}.masterProfileGrid{grid-template-columns:1fr}}
+
+.publicProfileCard{margin-top:18px;padding:28px;background:linear-gradient(145deg,#fffdf9,#f3ede3);border:1px solid var(--gold2);position:relative;overflow:hidden}.publicProfileCard h4{font:26px Georgia;margin:6px 0 10px}.publicProfileCard p{color:var(--muted);line-height:1.6;font-size:13px}.publicProfileActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.publicProfileLink{font-size:12px;color:#7a6236;word-break:break-all}.publicPage{min-height:100vh;padding:90px 20px;background:linear-gradient(180deg,#f3efe7,#eee9df)}.publicPageBox{max-width:760px;margin:auto;background:#fffdf9;border:1px solid var(--gold2);padding:48px;box-shadow:0 25px 80px rgba(70,55,40,.10);text-align:center}.publicPageBox .publicKicker{font-size:10px;letter-spacing:3px;color:var(--gold)}.publicPageBox h1{font:48px Georgia;margin:18px 0 10px}.publicPageBox .publicStatus{font:12px Arial;letter-spacing:2px;color:#806334;text-transform:uppercase}.publicScore{font:42px Georgia;color:#806334;margin:24px 0}.publicBadges{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:20px}.publicBadge{padding:9px 13px;border:1px solid var(--gold2);font-size:10px;letter-spacing:1.5px;color:#806334}.publicBack{display:inline-block;margin-top:30px;color:#806334;font-size:12px;border-bottom:1px solid var(--gold2);padding-bottom:4px}@media(max-width:700px){.publicPageBox{padding:32px 20px}.publicPageBox h1{font-size:36px}}
 </style>
 <style>
 /* Luxury hero refinement */
@@ -538,5 +540,39 @@ document.querySelectorAll('.courseInfoBtn').forEach(b=>b.addEventListener('click
 courseClose.onclick=()=>courseModal.classList.remove('show');
 courseModal.addEventListener('click',e=>{if(e.target===courseModal)courseModal.classList.remove('show')});
 courseBuy.onclick=async()=>{const code=courseBuy.dataset.course;const d=courseData[code];const {data:{user}}=await supabase.auth.getUser();if(!user){courseModal.classList.remove('show');openAuth('login');return}msg.textContent='Система оплаты подключается. После выбора провайдера эта кнопка будет создавать заказ и открывать защищённую оплату.';openAuth('login');};
-</script></body>
+</script>
+<div id="publicProfileMount"></div>
+
+<script>
+(function(){
+const publicBase=location.origin+location.pathname;
+function publicEsc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function makeSlug(){return 'master-'+Math.random().toString(36).slice(2,8)+'-'+Date.now().toString(36).slice(-4);}
+async function renderPublicProfile(){
+ const mount=document.getElementById('publicProfileMount'); if(!mount)return;
+ const slug=new URLSearchParams(location.search).get('profile');
+ if(!slug){mount.innerHTML='';return;}
+ document.querySelectorAll('body>section,body>header,body>footer,body>.screenSparkles').forEach(x=>x.style.display='none');
+ const {data,error}=await supabase.from('public_master_portfolios').select('display_name,status,specialties,score,badges').eq('slug',slug).eq('visible',true).maybeSingle();
+ if(error||!data){mount.innerHTML='<main class="publicPage"><div class="publicPageBox"><div class="publicKicker">МЕЖДУ МИРОВ · MASTER</div><h1>Профиль не найден</h1><p>Профиль недоступен или ещё не опубликован.</p><a class="publicBack" href="'+publicBase+'">Вернуться в академию</a></div></main>';return;}
+ const badges=Array.isArray(data.badges)?data.badges:[];
+ mount.innerHTML='<main class="publicPage"><div class="publicPageBox"><div class="publicKicker">МЕЖДУ МИРОВ · ПУБЛИЧНЫЙ ПРОФИЛЬ</div><h1>'+publicEsc(data.display_name)+'</h1><div class="publicStatus">'+publicEsc(data.status)+'</div><div class="publicScore">'+Number(data.score||0)+' / 100</div><p>'+publicEsc(data.specialties||'Профессиональная косметология и развитие специалиста')+'</p>'+(badges.length?'<div class="publicBadges">'+badges.map(b=>'<span class="publicBadge">'+publicEsc(b)+'</span>').join('')+'</div>':'')+'<a class="publicBack" href="'+publicBase+'">МЕЖДУ МИРОВ · АКАДЕМИЯ</a></div></main>';
+}
+async function ensurePublicCard(user){
+ const cabinet=document.getElementById('cabinetPanel'); if(!cabinet||document.getElementById('publicProfileCard'))return;
+ const host=document.createElement('div');host.id='publicProfileCard';host.className='publicProfileCard';
+ host.innerHTML='<span class="num">ПУБЛИЧНЫЙ ПРОФИЛЬ</span><h4>Ваш профессиональный профиль</h4><p>Создайте персональную ссылку, которую можно отправлять клиентам, коллегам и ученикам. Публикуются только профессиональные данные.</p><div class="publicProfileActions"><button class="miniBtn" id="publishPublicProfile">Создать профиль</button></div><div class="publicProfileLink" id="publicProfileLink"></div>';
+ cabinet.appendChild(host);
+ const {data:existing}=await supabase.from('public_master_portfolios').select('slug,display_name,status,specialties,score,badges,visible').eq('user_id',user.id).maybeSingle();
+ const paint=(p)=>{const link=document.getElementById('publicProfileLink');const b=document.getElementById('publishPublicProfile');if(!p){b.textContent='Создать профиль';return} link.textContent=p.visible?publicBase+'?profile='+encodeURIComponent(p.slug):'Профиль скрыт';b.textContent=p.visible?'Скопировать ссылку':'Опубликовать профиль';b.onclick=async()=>{if(p.visible){await navigator.clipboard?.writeText(publicBase+'?profile='+encodeURIComponent(p.slug));b.textContent='Ссылка скопирована ✓';setTimeout(()=>b.textContent='Скопировать ссылку',1800);return}const r=await supabase.from('public_master_portfolios').update({visible:true}).eq('user_id',user.id);if(!r.error){p.visible=true;paint(p)}}};
+ paint(existing);
+ const b=document.getElementById('publishPublicProfile');
+ if(!existing)b.onclick=async()=>{const {data:mp}=await supabase.from('master_profiles').select('status,specialties,score').eq('user_id',user.id).maybeSingle();const {data:pr}=await supabase.from('profiles').select('full_name').eq('id',user.id).maybeSingle();const slug=makeSlug();const r=await supabase.from('public_master_portfolios').insert({user_id:user.id,slug,display_name:pr?.full_name||'MASTER · МЕЖДУ МИРОВ',status:mp?.status||'MASTER IN PROGRESS',specialties:mp?.specialties||'Косметология · профессиональное развитие',score:mp?.score||0,badges:[],visible:true});if(r.error){b.textContent='Не удалось создать';return}paint({slug,visible:true});};
+}
+const oldLoadCabinet=window.loadCabinet;
+if(typeof oldLoadCabinet==='function'){window.loadCabinet=async function(user){const r=await oldLoadCabinet(user);await ensurePublicCard(user);return r;}}
+window.addEventListener('load',renderPublicProfile); if(location.search.includes('profile=')) renderPublicProfile();
+})();
+</script>
+</body>
 </html>
