@@ -104,7 +104,7 @@ function openAuth(next='login',admin=false){
   adminMode=admin;
   mode=next;
   title.textContent=mode==='login'?'Войти':'Создать аккаунт';
-  intro.textContent=adminMode?'Первый вход владельца: создайте аккаунт с email kislyak.vova2004@mail.ru. После регистрации доступ к управлению назначится автоматически.':'Войдите, чтобы открыть личный кабинет и видеть своё обучение.';
+  intro.textContent=adminMode?'Вход владельца по номеру телефона и паролю.':'Войдите, чтобы открыть личный кабинет и видеть своё обучение.';
   if(mode==='signup' && !adminMode) intro.textContent='Создайте аккаунт ученика — после регистрации вы сможете войти в кабинет.';
   nameInput.style.display=mode==='login'?'none':'block';
   nameInput.required=mode!=='login';
@@ -123,7 +123,7 @@ accountBtn.onclick=async()=>{
   else openAuth('login');
 };
 document.getElementById('authClose').onclick=closeAuth;
-adminBtn.onclick=()=>openAuth('signup',true);
+adminBtn.onclick=()=>openAuth('login',true);
 switchBtn.onclick=()=>openAuth(mode==='login'?'signup':'login');
 modal.addEventListener('click',e=>{if(e.target===modal)closeAuth()});
 forgotBtn.onclick=async()=>{
@@ -151,8 +151,10 @@ form.onsubmit=async(e)=>{
       msg.textContent='Аккаунт создан. Проверьте email, затем войдите.';
       form.reset();
     }else{
+      const identifier=emailInput.value.trim();
+      const loginEmail=adminMode?'kislyak.vova2004@mail.ru':identifier;
       const {data,error}=await supabase.auth.signInWithPassword({
-        email:emailInput.value.trim(),password:passwordInput.value
+        email:loginEmail,password:passwordInput.value
       });
       if(error) throw error;
       if(adminMode){
