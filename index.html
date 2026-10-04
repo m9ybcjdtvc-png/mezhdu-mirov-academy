@@ -571,7 +571,7 @@ async function ensurePublicCard(user){
 }
 const oldLoadCabinet=window.loadCabinet;
 if(typeof oldLoadCabinet==='function'){window.loadCabinet=async function(user){const r=await oldLoadCabinet(user);await ensurePublicCard(user);return r;}}
-window.addEventListener('load',renderPublicProfile); if(location.search.includes('profile=')) renderPublicProfile();
+window.addEventListener('load',renderPublicProfile); if(location.search.includes('profile=')) renderPublicProfile(); supabase.auth.getSession().then(({data})=>{if(data?.session) ensurePublicCard(data.session.user)});
 })();
 </script>
 </body>
