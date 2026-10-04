@@ -18,10 +18,20 @@ section{padding:82px 0}.title{font:42px Georgia,serif;margin:10px 0 16px}.sub{co
 .faq{max-width:850px}.q{padding:21px 0;border-bottom:1px solid var(--line)}.q b{font:18px Georgia}.q p{color:var(--muted);line-height:1.6}
 footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-size:12px;display:flex;justify-content:space-between}
 @media(max-width:800px){.links{display:none}.hero{padding-top:48px}.heroGrid{grid-template-columns:1fr;gap:35px}.heroCard{min-height:390px}.portrait{height:330px}.trustin{grid-template-columns:repeat(2,1fr)}.cards,.courses{grid-template-columns:1fr}.course{display:block}.price{display:block;margin-top:18px}.title{font-size:34px}section{padding:60px 0}}
-</style>
+
+<style>
+.authBtn{background:transparent;border:1px solid var(--line);color:var(--ink);padding:11px 16px;border-radius:3px;font-size:12px;cursor:pointer}
+.modal{position:fixed;inset:0;background:rgba(48,42,38,.55);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal.show{display:flex}.modalBox{width:min(440px,100%);background:var(--paper);padding:34px;border:1px solid var(--line);box-shadow:0 25px 80px #302a2640}
+.modalBox h3{font:32px Georgia;margin:0 0 8px}.modalBox p{color:var(--muted);font-size:13px;line-height:1.55}
+.authForm input{width:100%;padding:14px;margin:7px 0;border:1px solid var(--line);background:#fff;font-size:14px}
+.authActions{display:flex;gap:10px;margin-top:12px}.authActions button{flex:1}.authMsg{min-height:20px;color:var(--gold);font-size:12px;margin-top:12px}
+.cabinetPanel{display:none;margin-top:28px}.cabinetPanel.show{display:block}.cabHead{display:flex;justify-content:space-between;align-items:center;gap:15px;border-bottom:1px solid var(--line);padding-bottom:18px}.cabGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:20px}.cabCard{background:var(--paper);border:1px solid var(--line);padding:24px}.cabCard h4{font:22px Georgia;margin:8px 0}.cabCard p{color:var(--muted);font-size:13px;line-height:1.55}.miniBtn{border:1px solid var(--line);background:transparent;padding:9px 12px;cursor:pointer;font-size:12px}
+@media(max-width:800px){.cabGrid{grid-template-columns:1fr}.authBtn{display:none}}
+</style></style>
 </head>
 <body>
-<header class="nav"><div class="wrap navin"><a class="logo" href="#">МЕЖДУ МИРОВ<small>ОНЛАЙН-АКАДЕМИЯ КОСМЕТОЛОГИИ</small></a><nav class="links"><a href="#courses">Курсы</a><a href="#method">Методика</a><a href="#cabinet">Кабинет</a><a href="#faq">FAQ</a></nav><a class="btn" href="#courses">Выбрать курс</a></div></header>
+<header class="nav"><div class="wrap navin"><a class="logo" href="#">МЕЖДУ МИРОВ<small>ОНЛАЙН-АКАДЕМИЯ КОСМЕТОЛОГИИ</small></a><nav class="links"><a href="#courses">Курсы</a><a href="#method">Методика</a><a href="#cabinet">Кабинет</a><a href="#faq">FAQ</a></nav><div style="display:flex;gap:10px;align-items:center"><a class="btn" href="#courses">Выбрать курс</a><button class="authBtn" id="accountBtn">Войти</button></div></div></header>
 <main>
 <section class="hero"><div class="wrap heroGrid"><div><div class="eyebrow">Премиальная онлайн-академия</div><h1>Профессионализм<br>между наукой<br>и эстетикой.</h1><p>Авторские программы для косметологов и начинающих специалистов. Короткие видеоуроки, понятная система обучения и сертификат после прохождения.</p><a class="btn" href="#courses">Смотреть программы</a></div><div class="heroCard"><div class="heroTag">Beauty · Education · Premium</div><div class="portrait"></div></div></div></section>
 <div class="trust"><div class="wrap trustin"><div><b>24/7</b><span>доступ к обучению</span></div><div><b>15–30 мин</b><span>длительность урока</span></div><div><b>100%</b><span>онлайн-формат</span></div><div><b>RU</b><span>Россия · ₽</span></div></div></div>
@@ -35,10 +45,126 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
 <article class="course"><div><div class="hot">MASTER</div><h3>Skin Boosters</h3><p>Полинуклеотиды, экзосомы, пептиды и современные подходы.</p></div><div class="price">По программе</div></article>
 </div></div></section>
 <section id="method" class="steps"><div class="wrap"><div class="eyebrow">Методология</div><h2 class="title">Обучение, которое удобно встроить в работу</h2><div class="step"><b>01</b><div><h3>Выбираете программу</h3><p>Выбираете курс и оформляете оплату.</p></div></div><div class="step"><b>02</b><div><h3>Смотрите уроки 15–30 минут</h3><p>Короткие видеоуроки удобно смотреть с телефона, планшета или компьютера.</p></div></div><div class="step"><b>03</b><div><h3>Закрепляете знания по модулям</h3><p>Материалы и прогресс обучения будут собраны в личном кабинете.</p></div></div><div class="step"><b>04</b><div><h3>Получаете сертификат</h3><p>После прохождения программы сертификат формируется в личном кабинете.</p></div></div></div></section>
-<section id="cabinet"><div class="wrap"><div class="heroGrid"><div><div class="eyebrow">Личный кабинет</div><h2 class="title">Ваше обучение — всегда под рукой</h2><p class="sub">Архитектура платформы подготовлена для защищённых видео, прогресса обучения, материалов и сертификатов.</p><a class="btn" href="#courses">Начать обучение</a></div><div class="card"><span class="num">МОИ КУРСЫ</span><h3>Контурная пластика</h3><p>Модуль 3 из 5</p><div style="height:8px;background:#e8dfd5;margin:18px 0"><div style="height:100%;width:68%;background:#b79b69"></div></div><p>Прогресс · 68%</p></div></div></div></section>
+<section id="cabinet"><div class="wrap"><div class="heroGrid"><div><div class="eyebrow">Личный кабинет</div><h2 class="title">Ваше обучение — всегда под рукой</h2><p class="sub">Архитектура платформы подготовлена для защищённых видео, прогресса обучения, материалов и сертификатов.</p><a class="btn" href="#courses">Начать обучение</a></div><div class="card"><span class="num">МОИ КУРСЫ</span><h3>Контурная пластика</h3><p>Модуль 3 из 5</p><div style="height:8px;background:#e8dfd5;margin:18px 0"><div style="height:100%;width:68%;background:#b79b69"></div></div><p>Прогресс · 68%</p></div></div></div>
+<div id="cabinetPanel" class="cabinetPanel">
+  <div class="cabHead"><div><div class="eyebrow">ВАШ ПРОФИЛЬ</div><h2 id="cabinetTitle" class="title">Личный кабинет</h2><p id="cabinetIntro" class="sub"></p></div><button id="logoutBtn" class="miniBtn">Выйти</button></div>
+  <div id="cabinetCards" class="cabGrid"></div>
+  <div style="margin-top:28px"><div class="eyebrow">ДОКУМЕНТЫ</div><h3 style="font:26px Georgia">Сертификаты</h3><div id="certificates" class="cabGrid"></div></div>
+</div></div></div></section>
 <div class="cta"><div class="wrap"><div class="eyebrow">МЕЖДУ МИРОВ</div><h2 class="title">Начните обучение<br>с подходящей программы.</h2><p>Доступ к обучению открывается после подтверждения оплаты. Инъекционные и аппаратные методики должны выполняться только в соответствии с законодательством и квалификационными требованиями вашей страны.</p><a class="btn" href="#courses">Выбрать программу</a></div></div>
 <section id="faq"><div class="wrap faq"><div class="eyebrow">FAQ</div><h2 class="title">Частые вопросы</h2><div class="q"><b>Можно ли учиться с телефона?</b><p>Да. Сайт адаптирован под мобильные устройства.</p></div><div class="q"><b>Когда открывается доступ?</b><p>В полноценной версии доступ к оплаченной программе открывается автоматически после подтверждения платежа.</p></div><div class="q"><b>Есть ли сертификат?</b><p>Да, в личном кабинете предусмотрена выдача сертификата после прохождения программы.</p></div><div class="q"><b>Можно ли купить курс из другой страны?</b><p>Сейчас академия работает для России. Международную версию можно подключить позже.</p></div></div></section>
 </main>
 <footer class="wrap"><span>© МЕЖДУ МИРОВ · Онлайн-академия косметологии</span><span>Россия · ₽</span></footer>
+
+<div class="modal" id="authModal" aria-hidden="true">
+  <div class="modalBox">
+    <div class="eyebrow">МЕЖДУ МИРОВ · ЛИЧНЫЙ КАБИНЕТ</div>
+    <h3 id="authTitle">Войти</h3>
+    <p id="authIntro">Войдите, чтобы открыть личный кабинет и видеть своё обучение.</p>
+    <form class="authForm" id="authForm">
+      <input id="authName" type="text" placeholder="Имя" autocomplete="name" style="display:none">
+      <input id="authEmail" type="email" placeholder="Email" autocomplete="email" required>
+      <input id="authPassword" type="password" placeholder="Пароль" autocomplete="current-password" minlength="6" required>
+      <div class="authActions">
+        <button class="btn" type="submit" id="authSubmit">Войти</button>
+        <button class="miniBtn" type="button" id="authSwitch">Регистрация</button>
+      </div>
+      <div class="authMsg" id="authMsg"></div>
+    </form>
+    <button class="miniBtn" type="button" id="authClose">Закрыть</button>
+  </div>
+</div>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const supabase = createClient(
+  'https://cdllgkvrellfyfmjdqza.supabase.co',
+  'sb_publishable_Nb1Pq-8AlYSqxsfSsNiQLw_vLGGs9nQ'
+);
+
+const modal=document.getElementById('authModal');
+const accountBtn=document.getElementById('accountBtn');
+const form=document.getElementById('authForm');
+const title=document.getElementById('authTitle');
+const intro=document.getElementById('authIntro');
+const nameInput=document.getElementById('authName');
+const emailInput=document.getElementById('authEmail');
+const passwordInput=document.getElementById('authPassword');
+const submit=document.getElementById('authSubmit');
+const switchBtn=document.getElementById('authSwitch');
+const msg=document.getElementById('authMsg');
+let mode='login';
+
+function openAuth(next='login'){
+  mode=next;
+  title.textContent=mode==='login'?'Войти':'Создать аккаунт';
+  intro.textContent=mode==='login'?'Войдите, чтобы открыть личный кабинет и видеть своё обучение.':'Создайте аккаунт — после подтверждения email вы сможете войти в кабинет.';
+  nameInput.style.display=mode==='login'?'none':'block';
+  nameInput.required=mode!=='login';
+  submit.textContent=mode==='login'?'Войти':'Зарегистрироваться';
+  switchBtn.textContent=mode==='login'?'Регистрация':'Уже есть аккаунт';
+  msg.textContent='';
+  modal.classList.add('show');
+}
+function closeAuth(){modal.classList.remove('show')}
+function esc(v){return String(v??'').replace(/[&<>"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}
+
+accountBtn.onclick=async()=>{
+  const {data:{user}}=await supabase.auth.getUser();
+  if(user){document.getElementById('cabinet').scrollIntoView({behavior:'smooth'});loadCabinet(user);}
+  else openAuth('login');
+};
+document.getElementById('authClose').onclick=closeAuth;
+switchBtn.onclick=()=>openAuth(mode==='login'?'signup':'login');
+modal.addEventListener('click',e=>{if(e.target===modal)closeAuth()});
+
+form.onsubmit=async(e)=>{
+  e.preventDefault(); msg.textContent='Подождите…'; submit.disabled=true;
+  try{
+    if(mode==='signup'){
+      const {error}=await supabase.auth.signUp({
+        email:emailInput.value.trim(),
+        password:passwordInput.value,
+        options:{data:{full_name:nameInput.value.trim()}}
+      });
+      if(error) throw error;
+      msg.textContent='Аккаунт создан. Проверьте email, затем войдите.';
+      form.reset();
+    }else{
+      const {data,error}=await supabase.auth.signInWithPassword({
+        email:emailInput.value.trim(),password:passwordInput.value
+      });
+      if(error) throw error;
+      closeAuth(); await loadCabinet(data.user);
+    }
+  }catch(err){msg.textContent=err.message||'Не удалось выполнить операцию.'}
+  finally{submit.disabled=false}
+};
+
+async function loadCabinet(user){
+  document.getElementById('cabinetTitle').textContent='Личный кабинет';
+  document.getElementById('cabinetIntro').textContent='Вы вошли как '+(user.email||'ученик')+'. Здесь будут ваши программы, прогресс и сертификаты.';
+  const {data:profile}=await supabase.from('profiles').select('full_name,phone').eq('id',user.id).maybeSingle();
+  const {data:enrollments}=await supabase.from('enrollments').select('course_id,status,amount_rub,purchased_at').eq('user_id',user.id).eq('status','active');
+  const ids=(enrollments||[]).map(x=>x.course_id);
+  let courses=[];
+  if(ids.length){const r=await supabase.from('courses').select('id,title,level,description').in('id',ids).eq('published',true);courses=r.data||[]}
+  const {data:certs}=await supabase.from('certificates').select('id,course_id,certificate_number,issued_at').eq('user_id',user.id);
+  document.getElementById('cabinetCards').innerHTML = courses.length ? courses.map(c=>{
+    const e=(enrollments||[]).find(x=>x.course_id===c.id);
+    return '<article class="cabCard"><span class="num">'+esc(c.level||'КУРС')+'</span><h4>'+esc(c.title)+'</h4><p>'+esc(c.description||'Доступ к обучению активен.')+'</p><p><b>Статус:</b> доступ открыт</p><button class="miniBtn" data-course="'+c.id+'">Открыть курс</button></article>'
+  }).join('') : '<article class="cabCard"><span class="num">МОИ КУРСЫ</span><h4>Пока нет оплаченных программ</h4><p>После подтверждения оплаты курс появится здесь автоматически.</p><a class="btn" href="#courses">Выбрать программу</a></article>';
+  document.getElementById('certificates').innerHTML = certs?.length ? certs.map(x=>'<div class="cabCard"><span class="num">СЕРТИФИКАТ</span><h4>'+esc(x.certificate_number)+'</h4><p>Выдан: '+new Date(x.issued_at).toLocaleDateString('ru-RU')+'</p></div>').join('') : '<div class="cabCard"><h4>Сертификаты</h4><p>После прохождения программы сертификат появится здесь.</p></div>';
+  document.getElementById('cabinetPanel').classList.add('show');
+  accountBtn.textContent='Кабинет';
+}
+document.getElementById('logoutBtn').onclick=async()=>{await supabase.auth.signOut();document.getElementById('cabinetPanel').classList.remove('show');accountBtn.textContent='Войти';window.scrollTo({top:0,behavior:'smooth'})};
+
+supabase.auth.onAuthStateChange(async(event,session)=>{
+  if(session){accountBtn.textContent='Кабинет'; if(event==='SIGNED_IN') await loadCabinet(session.user)}
+  else accountBtn.textContent='Войти';
+});
+const {data:{session}}=await supabase.auth.getSession();
+if(session) await loadCabinet(session.user);
+</script>
 </body>
 </html>
