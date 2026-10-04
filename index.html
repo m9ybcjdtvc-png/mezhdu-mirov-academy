@@ -61,7 +61,7 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
 
 <div class="modal" id="authModal" aria-hidden="true">
   <div class="modalBox">
-    <div class="eyebrow">МЕЖДУ МИРОВ · ЛИЧНЫЙ КАБИНЕТ</div>
+    <div class="eyebrow">МЕЖДУ МИРОВ · ПАНЕЛЬ ВЛАДЕЛЬЦА</div>
     <h3 id="authTitle">Войти</h3>
     <p id="authIntro">Войдите, чтобы открыть личный кабинет и видеть своё обучение.</p>
     <form class="authForm" id="authForm">
@@ -108,7 +108,7 @@ function openAuth(next='login',admin=false){
   emailInput.placeholder=adminMode?'Номер телефона':'Email';
   emailInput.autocomplete=adminMode?'tel':'email';
   emailInput.value='';
-  intro.textContent=adminMode?'Вход владельца по номеру телефона и паролю.':'Войдите, чтобы открыть личный кабинет и видеть своё обучение.';
+  intro.textContent=adminMode?'Введите номер телефона владельца и пароль. После входа откроется панель управления.':'Войдите, чтобы открыть личный кабинет и видеть своё обучение.';
   if(mode==='signup' && !adminMode) intro.textContent='Создайте аккаунт ученика — после регистрации вы сможете войти в кабинет.';
   nameInput.style.display=(mode==='login'||adminMode)?'none':'block';
   nameInput.required=mode!=='login'&&!adminMode;
@@ -185,8 +185,11 @@ form.onsubmit=async(e)=>{
 };
 
 async function loadAdmin(user){
-  const role=user.app_metadata?.role||'';
-  if(role!=='admin'){openAuth('login',true);return;}
+  const {data:profile,error:profileError}=await supabase.from('profiles').select('role').eq('id',user.id).maybeSingle();
+  if(profileError || profile?.role!=='admin'){
+    msg.textContent=profileError ? 'Не удалось проверить права владельца.' : 'Доступ владельца не настроен для этого аккаунта.';
+    return;
+  }
   const [courses,students,enrollments,certificates]=await Promise.all([
     supabase.from('courses').select('id',{count:'exact',head:true}),
     supabase.from('profiles').select('id',{count:'exact',head:true}),
@@ -199,6 +202,7 @@ async function loadAdmin(user){
   document.getElementById('adminCertificates').textContent=certificates.count??0;
   document.getElementById('adminEmail').textContent=user.email||'';
   document.getElementById('adminPanel').style.display='block';
+  document.getElementById('adminNotice').textContent='Панель владельца открыта. Здесь можно создавать и редактировать курсы и уроки.';
   await renderAdminEditor();
   document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'});
 }
@@ -282,7 +286,7 @@ document.getElementById('logoutBtn').onclick=async()=>{await supabase.auth.signO
 supabase.auth.onAuthStateChange((event,session)=>{
   if(session){
     accountBtn.textContent='Кабинет';
-    if(event==='SIGNED_IN' && (session.user.app_metadata?.role||'')==='admin') adminBtn.textContent='Владелец ✓';
+    if(event==='SIGNED_IN') supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle().then(({data})=>{ if(data?.role==='admin') adminBtn.textContent='Владелец ✓'; });
   }else{
     accountBtn.textContent='Войти';
     adminBtn.textContent='Владелец';
