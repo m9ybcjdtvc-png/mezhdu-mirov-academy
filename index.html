@@ -66,7 +66,7 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
     <p id="authIntro">Войдите, чтобы открыть личный кабинет и видеть своё обучение.</p>
     <form class="authForm" id="authForm">
       <input id="authName" type="text" placeholder="Имя" autocomplete="name" style="display:none">
-      <input id="authEmail" type="text" placeholder="Email" autocomplete="email" required>
+      <input id="authEmail" type="text" placeholder="Email или номер телефона" autocomplete="email tel" required>
       <input id="authPassword" type="password" placeholder="Пароль" autocomplete="current-password" minlength="6" required>
       <div class="authActions">
         <button class="btn" type="submit" id="authSubmit">Войти</button>
@@ -104,9 +104,9 @@ function openAuth(next='login',admin=false){
   adminMode=admin;
   mode=next;
   title.textContent=mode==='login'?'Войти':'Создать аккаунт';
-  emailInput.type=adminMode?'tel':'email';
-  emailInput.placeholder=adminMode?'Номер телефона':'Email';
-  emailInput.autocomplete=adminMode?'tel':'email';
+  emailInput.type='text';
+  emailInput.placeholder=adminMode?'Номер телефона владельца':(mode==='signup'?'Email или номер телефона':'Email или номер телефона');
+  emailInput.autocomplete='email tel';
   emailInput.value='';
   intro.textContent=adminMode?'Введите номер телефона владельца и пароль. После входа откроется панель управления.':'Войдите, чтобы открыть личный кабинет и видеть своё обучение.';
   if(mode==='signup' && !adminMode) intro.textContent='Создайте аккаунт ученика — после регистрации вы сможете войти в кабинет.';
@@ -133,7 +133,7 @@ switchBtn.onclick=()=>{ if(adminMode) return; openAuth(mode==='login'?'signup':'
 modal.addEventListener('click',e=>{if(e.target===modal)closeAuth()});
 forgotBtn.onclick=async()=>{
   const email=emailInput.value.trim();
-  if(!email){msg.textContent='Сначала укажите email.';return;}
+  if(!email || !email.includes('@')){msg.textContent='Для восстановления пароля укажите email.';return;}
   forgotBtn.disabled=true; msg.textContent='Отправляю ссылку для восстановления…';
   try{
     const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname+'?reset=1'});
@@ -147,22 +147,43 @@ form.onsubmit=async(e)=>{
   e.preventDefault(); msg.textContent='Подождите…'; submit.disabled=true;
   try{
     if(mode==='signup'){
-      const {error}=await supabase.auth.signUp({
-        email:emailInput.value.trim(),
-        password:passwordInput.value,
-        options:{data:{full_name:nameInput.value.trim()}}
-      });
-      if(error) throw error;
-      msg.textContent='Аккаунт создан. Проверьте email, затем войдите.';
+      const identifier=emailInput.value.trim();
+      const isPhone=!identifier.includes('@');
+      if(isPhone){
+        const phone=identifier.replace(/[^\d+]/g,'');
+        const normalizedPhone=phone.startsWith('+')?phone:'+'+phone;
+        if(!/^\+[1-9]\d{7,14}$/.test(normalizedPhone)) throw new Error('Введите номер телефона в международном формате, например +7 999 123-45-67.');
+        const {data,error}=await supabase.auth.signUp({
+          phone:normalizedPhone,
+          password:passwordInput.value,
+          options:{data:{full_name:nameInput.value.trim()}}
+        });
+        if(error) throw error;
+        msg.textContent='Аккаунт создан. Если подтверждение телефона включено, введите код из SMS, затем войдите.';
+      }else{
+        const {error}=await supabase.auth.signUp({
+          email:identifier,
+          password:passwordInput.value,
+          options:{data:{full_name:nameInput.value.trim()}}
+        });
+        if(error) throw error;
+        msg.textContent='Аккаунт создан. Проверьте email, затем войдите.';
+      }
       form.reset();
     }else{
       const identifier=emailInput.value.trim();
-      const normalizedPhone=identifier.replace(/\D/g,'');
-      if(adminMode && normalizedPhone.length < 10) throw new Error('Введите полный номер телефона владельца.');
-      const loginEmail=adminMode?'kislyak.vova2004@mail.ru':identifier;
-      const {data,error}=await supabase.auth.signInWithPassword({
-        email:loginEmail,password:passwordInput.value
-      });
+      if(adminMode){
+        const normalizedPhone=identifier.replace(/\D/g,'');
+        if(normalizedPhone.length < 10) throw new Error('Введите полный номер телефона владельца.');
+      }
+      const isPhone=!identifier.includes('@')&&!adminMode;
+      const loginValue=isPhone
+        ? (identifier.replace(/[^\d+]/g,'').startsWith('+')?identifier.replace(/[^\d+]/g,''):'+'+identifier.replace(/\D/g,''))
+        : (adminMode?'kislyak.vova2004@mail.ru':identifier);
+      const authPayload=isPhone
+        ? {phone:loginValue,password:passwordInput.value}
+        : {email:loginValue,password:passwordInput.value};
+      const {data,error}=await supabase.auth.signInWithPassword(authPayload);
       if(error) throw error;
       if(adminMode){
         const {data:ownerProfile,error:ownerProfileError}=await supabase
