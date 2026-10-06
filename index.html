@@ -745,5 +745,18 @@ window.addEventListener('load',renderPublicProfile); window.addEventListener('lo
  document.body.appendChild(root);
 })();
 </script>
-</body>
+<script id="academyAuthFallback">
+window.__openAcademyAuth=function(admin){
+ var m=document.getElementById('authModal'); if(!m)return;
+ m.classList.add('show');
+ var e=document.getElementById('authEmail'),n=document.getElementById('authName'),s=document.getElementById('authSwitch'),f=document.getElementById('forgotBtn'),t=document.getElementById('authTitle'),i=document.getElementById('authIntro');
+ if(t)t.textContent='Войти';
+ if(e){e.type='text';e.value='';e.placeholder=admin?'Email или номер телефона владельца':'Email или номер телефона';}
+ if(n){n.style.display='none';n.required=false;}
+ if(s)s.style.display=admin?'none':'inline-block';
+ if(f)f.style.display='block';
+ if(i)i.textContent=admin?'Введите данные владельца для входа в панель управления.':'Войдите, чтобы открыть личный кабинет.';
+ window.__academyAdminMode=!!admin;
+};
+</script></body>
 </html>
