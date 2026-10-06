@@ -643,7 +643,7 @@ document.getElementById('logoutBtn').onclick=async()=>{await supabase.auth.signO
 supabase.auth.onAuthStateChange((event,session)=>{
   if(session){
     accountBtn.textContent='Кабинет';
-    if(event==='SIGNED_IN') supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle().then(({data})=>{ if(data?.role==='admin')  });
+    if(event==='SIGNED_IN') supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
   }else{
     accountBtn.textContent='Войти';
     
@@ -658,8 +658,7 @@ if(new URLSearchParams(location.search).get('reset')==='1'){
 }
 if(session){
   const {data:profile}=await supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
-  if(profile?.role==='admin') 
-  else await loadCabinet(session.user);
+  if(profile?.role!=='admin') await loadCabinet(session.user);
 }
 
 document.getElementById('newVideoBtn')?.addEventListener('click',async()=>{const box=document.getElementById('videoUploadBox');box.style.display='block';const s=document.getElementById('videoCourseSelect');const {data}=await supabase.from('courses').select('id,title').order('created_at');s.innerHTML='<option value="">Выберите курс…</option>'+(data||[]).map(x=>'<option value="'+x.id+'">'+esc(x.title)+'</option>').join('')});
