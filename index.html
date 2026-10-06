@@ -296,9 +296,10 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
     <button class="miniBtn" type="button" id="authClose">Закрыть</button>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const { createClient } = window.supabase;
+if(typeof createClient !== "function"){ throw new Error("Supabase SDK не загрузился. Обновите страницу."); }
 const supabase = createClient(
   'https://cdllgkvrellfyfmjdqza.supabase.co',
   'sb_publishable_Nb1Pq-8AlYSqxsfSsNiQLw_vLGGs9nQ'
