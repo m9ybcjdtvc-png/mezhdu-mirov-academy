@@ -747,6 +747,7 @@ window.addEventListener('load',renderPublicProfile); window.addEventListener('lo
 </script>
 <script id="academyAuthFallback">
 window.__openAcademyAuth=function(admin){
+ if(typeof openAuth==='function'){ openAuth('login',!!admin); return; }
  var m=document.getElementById('authModal'); if(!m)return;
  m.classList.add('show');
  var e=document.getElementById('authEmail'),n=document.getElementById('authName'),s=document.getElementById('authSwitch'),f=document.getElementById('forgotBtn'),t=document.getElementById('authTitle'),i=document.getElementById('authIntro');
@@ -756,7 +757,6 @@ window.__openAcademyAuth=function(admin){
  if(s)s.style.display=admin?'none':'inline-block';
  if(f)f.style.display='block';
  if(i)i.textContent=admin?'Введите данные владельца для входа в панель управления.':'Войдите, чтобы открыть личный кабинет.';
- window.__academyAdminMode=!!admin;
 };
 </script></body>
 </html>
