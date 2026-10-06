@@ -775,5 +775,30 @@ window.__openAcademyAuth=function(admin){
   };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
 })();
-</script></body>
+<script id="academyOwnerFix">
+(function(){
+  function ownerView(){
+    const q=new URLSearchParams(location.search).get('owner')==='1';
+    const p=location.pathname.replace(/\/+$/,'');
+    if(!q && p!=='/owner' && p!=='/admin') return;
+    document.title='Владелец · МЕЖДУ МИРОВ';
+    const admin=document.getElementById('adminPanel');
+    document.querySelectorAll('body>header,body>footer,body>.screenSparkles').forEach(x=>x.style.display='none');
+    document.querySelectorAll('body>section').forEach(x=>x.style.display=(admin && x.contains(admin))?'block':'none');
+    if(admin) admin.style.display='block';
+    setTimeout(async()=>{
+      try{
+        const {data:{session}}=await supabase.auth.getSession();
+        if(session){
+          const {data:profile}=await supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
+          if(profile && profile.role==='admin' && typeof loadAdmin==='function'){ await loadAdmin(session.user); return; }
+        }
+        if(typeof openAuth==='function') openAuth('login',true);
+      }catch(e){ if(typeof openAuth==='function') openAuth('login',true); }
+    },100);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ownerView,{once:true});
+  else ownerView();
+})();
+</script></script></body>
 </html>
