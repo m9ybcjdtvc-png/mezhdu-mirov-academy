@@ -759,7 +759,7 @@ window.__openAcademyAuth=function(admin){
 };
 </script><script id="academyOwnerRoute">
 (function(){
-  const isOwnerRoute = location.pathname.replace(/\\/+$/,'') === '/owner' || location.pathname.replace(/\\/+$/,'') === '/admin';
+  const isOwnerRoute = location.pathname.replace(/\\/+$/,'') === '/owner' || location.pathname.replace(/\\/+$/,'') === '/admin' || new URLSearchParams(location.search).get('owner') === '1';
   if(!isOwnerRoute) return;
   document.title='Владелец · МЕЖДУ МИРОВ';
   document.querySelectorAll('body>header,body>section,body>footer,body>.screenSparkles').forEach(x=>x.style.display='none');
