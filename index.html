@@ -759,24 +759,6 @@ window.__openAcademyAuth=function(admin){
 };
 </script><script id="academyOwnerRoute">
 (function(){
-  const isOwnerRoute = location.pathname.replace(/\\/+$/,'') === '/owner' || location.pathname.replace(/\\/+$/,'') === '/admin' || new URLSearchParams(location.search).get('owner') === '1';
-  if(!isOwnerRoute) return;
-  document.title='Владелец · МЕЖДУ МИРОВ';
-  document.querySelectorAll('body>header,body>section,body>footer,body>.screenSparkles').forEach(x=>x.style.display='none');
-  const adminPanel=document.getElementById('adminPanel');
-  if(adminPanel){ adminPanel.style.display='block'; adminPanel.scrollIntoView({behavior:'instant',block:'start'}); }
-  const boot=async()=>{
-    const {data:{session}}=await supabase.auth.getSession();
-    if(session){
-      const {data:profile}=await supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
-      if(profile?.role==='admin'){ await loadAdmin(session.user); return; }
-    }
-    openAuth('login',true);
-  };
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
-})();
-<script id="academyOwnerFix">
-(function(){
   function ownerView(){
     const q=new URLSearchParams(location.search).get('owner')==='1';
     const p=location.pathname.replace(/\/+$/,'');
@@ -800,5 +782,5 @@ window.__openAcademyAuth=function(admin){
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ownerView,{once:true});
   else ownerView();
 })();
-</script></script></body>
+</script></body>
 </html>
