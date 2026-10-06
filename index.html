@@ -260,7 +260,7 @@ function openAuth(next='login',admin=false){
   mode=next;
   title.textContent=mode==='login'?'Войти':'Создать аккаунт';
   emailInput.type='text';
-  emailInput.placeholder=adminMode?'Номер телефона владельца':(mode==='signup'?'Email или номер телефона':'Email или номер телефона');
+  emailInput.placeholder=adminMode?'Email или номер телефона владельца':(mode==='signup'?'Email или номер телефона':'Email или номер телефона');
   emailInput.autocomplete='email tel';
   emailInput.value='';
   intro.textContent=adminMode?'Введите номер телефона владельца и пароль. После входа откроется панель управления.':'Войдите, чтобы открыть личный кабинет и видеть своё обучение.';
@@ -270,7 +270,7 @@ function openAuth(next='login',admin=false){
   submit.textContent=mode==='login'?'Войти':'Зарегистрироваться';
   switchBtn.textContent=adminMode?'Вход владельца':(mode==='login'?'Регистрация':'Уже есть аккаунт');
   switchBtn.style.display=adminMode?'none':'inline-block';
-  forgotBtn.style.display=mode==='login'&&!adminMode?'block':'none';
+  forgotBtn.style.display=mode==='login'?'block':'none';
   msg.textContent='';
   modal.classList.add('show');
 }
@@ -287,13 +287,18 @@ adminBtn.onclick=()=>openAuth('login',true);
 switchBtn.onclick=()=>{ if(adminMode) return; openAuth(mode==='login'?'signup':'login'); };
 modal.addEventListener('click',e=>{if(e.target===modal)closeAuth()});
 forgotBtn.onclick=async()=>{
-  const email=emailInput.value.trim();
+  const identifier=emailInput.value.trim();
+  const email=adminMode
+    ? (identifier.includes('@') ? identifier : 'kislyak.vova2004@mail.ru')
+    : identifier;
   if(!email || !email.includes('@')){msg.textContent='Для восстановления пароля укажите email.';return;}
   forgotBtn.disabled=true; msg.textContent='Отправляю ссылку для восстановления…';
   try{
     const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname+'?reset=1'});
     if(error) throw error;
-    msg.textContent='Если аккаунт существует, ссылка для восстановления отправлена на email.';
+    msg.textContent=adminMode
+      ? 'Ссылка для восстановления отправлена на email владельца.'
+      : 'Если аккаунт существует, ссылка для восстановления отправлена на email.';
   }catch(err){msg.textContent=err.message||'Не удалось отправить ссылку.'}
   finally{forgotBtn.disabled=false}
 };
