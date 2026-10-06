@@ -568,7 +568,26 @@ async function loadCabinet(user){
     return '<article class="cabCard"><span class="num">'+esc(c.level||'КУРС')+'</span><h4>'+esc(c.title)+'</h4><p>'+esc(c.description||'Доступ к обучению активен.')+'</p><p><b>Статус:</b> доступ открыт</p><button class="miniBtn" data-course="'+c.id+'">Открыть курс</button></article>'
   }).join('') : '<div class="emptyCourse"><span class="num">ОБУЧЕНИЕ</span><h4>Ваш первый курс появится здесь</h4><p>Сейчас программы находятся в подготовке. Как только будет опубликован первый курс и подтверждена оплата, он автоматически появится в этом разделе.</p><a class="btn" href="#courses">Узнать о запуске</a></div>';
   document.getElementById('certificates').innerHTML = certs?.length ? certs.map(x=>'<div class="cabCard"><span class="num">СЕРТИФИКАТ</span><h4>'+esc(x.certificate_number)+'</h4><p>Выдан: '+new Date(x.issued_at).toLocaleDateString('ru-RU')+'</p></div>').join('') : '<div class="emptyCourse"><span class="num">СЕРТИФИКАТЫ</span><h4>Пока сертификатов нет</h4><p>После завершения обучения сертификат будет доступен в вашем личном кабинете.</p></div>';
-  document.getElementById('cabinetPanel').classList.add('show'); await loadMasterTasks(); await loadMasterCertificate(user);
+  document.getElementById('cabinetPanel').classList.add('show');
+  document.querySelectorAll('[data-course]').forEach(b=>b.onclick=async()=>openStudentCourse(b.dataset.course));
+  await loadMasterTasks(); await loadMasterCertificate(user);
+async function openStudentCourse(courseId){
+ const host=document.getElementById('cabinetCards'); if(!host)return;
+ const {data:lessons,error}=await supabase.from('lessons').select('id,title,description,video_url,duration_minutes,position,published').eq('course_id',courseId).eq('published',true).order('position');
+ if(error){host.innerHTML='<div class="adminNotice">Не удалось загрузить уроки.</div>';return}
+ if(!lessons?.length){host.innerHTML='<div class="emptyCourse"><h4>Уроки ещё не опубликованы</h4><p>Владелец академии добавит видео в этот раздел.</p></div>';return}
+ const cards=[];
+ for(const l of lessons){
+   let src='';
+   if(l.video_url){
+     if(l.video_url.startsWith('http')) src=l.video_url;
+     else {const s=await supabase.storage.from('academy-videos').createSignedUrl(l.video_url,3600);src=s.data?.signedUrl||''}
+   }
+   cards.push('<article class="cabCard lessonCard"><span class="num">УРОК '+String(l.position||0).padStart(2,'0')+'</span><h4>'+esc(l.title)+'</h4><p>'+esc(l.description||'')+'</p>'+(src?'<video controls playsinline preload="metadata" src="'+esc(src)+'" style="width:100%;margin-top:14px;border-radius:8px;background:#171513"></video>':'<div class="adminNotice">Видео пока не загружено.</div>')+'<p><span class="statusDot on">'+esc(l.duration_minutes||'—')+' мин</span></p></article>');
+ }
+ host.innerHTML='<div style="grid-column:1/-1"><button class="miniBtn" id="backToCourses">← Все мои курсы</button></div>'+cards.join('');
+ document.getElementById('backToCourses').onclick=()=>loadCabinet((await supabase.auth.getUser()).data.user);
+}
 async function loadMasterCertificate(user){
  const host=document.getElementById('masterCertificateMount'); if(!host||!user)return;
  const {data:cert}=await supabase.from('master_certificates').select('certificate_number,level,title,issued_at,visible').eq('user_id',user.id).maybeSingle();
@@ -587,7 +606,7 @@ async function loadMasterTasks(){
   const {data:subs}=await supabase.from('master_submissions').select('id,assignment_id,answer,status,feedback,created_at,reviewed_at').eq('user_id',user.id);
   const map=new Map((subs||[]).map(s=>[s.assignment_id,s]));
   const done=(tasks||[]).filter(t=>map.get(t.id)?.status==='reviewed').length;
-  const total=(tasks||[]).length||1; const pct=Math.round((done/total)*100); const bar=document.getElementById('masterProgressBar'); const pt=document.getElementById('masterProgressText'); const score=document.getElementById('masterScoreText'); const stages=document.getElementById('masterMetricStages'); const reviewed=document.getElementById('masterMetricReviewed'); const st=document.getElementById('masterProfileStatus'); const ms=document.getElementById('masterMetricStatus'); if(bar)bar.style.width=pct+'%'; if(pt)pt.textContent=pct+'% · '+(pct===100?'траектория завершена':'траектория в работе'); if(score)score.textContent=pct+' / 100'; if(stages)stages.textContent=done+' / '+(tasks||[]).length; if(reviewed)reviewed.textContent=done; if(st)st.textContent=pct===100?'MASTER · COMPLETED':pct>=50?'MASTER · ADVANCED':'MASTER IN PROGRESS'; if(ms)ms.textContent=pct===100?'МАСТЕР':'В РАЗВИТИИ'; const total=(tasks||[]).length||1; const pct=Math.round((done/total)*100); const bar=document.getElementById('masterProgressBar'); const pt=document.getElementById('masterProgressText'); const score=document.getElementById('masterScoreText'); const stages=document.getElementById('masterMetricStages'); const reviewed=document.getElementById('masterMetricReviewed'); const st=document.getElementById('masterProfileStatus'); const ms=document.getElementById('masterMetricStatus'); if(bar)bar.style.width=pct+'%'; if(pt)pt.textContent=pct+'% · '+(pct===100?'траектория завершена':'траектория в работе'); if(score)score.textContent=pct+' / 100'; if(stages)stages.textContent=done+' / '+(tasks||[]).length; if(reviewed)reviewed.textContent=done; if(st)st.textContent=pct===100?'MASTER · COMPLETED':pct>=50?'MASTER · ADVANCED':'MASTER IN PROGRESS'; if(ms)ms.textContent=pct===100?'МАСТЕР':'В РАЗВИТИИ'; summary.textContent=done+' / '+(tasks||[]).length+' ЭТАПОВ ПРОЙДЕНО'; const badges=document.getElementById('masterBadges'); if(badges){const b=[]; if(done>=1)b.push('01 · DIAGNOSTIC'); if(done>=2)b.push('02 · PERSONAL PLAN'); if(done>=3)b.push('03 · CASE PRACTICE'); if(done>=4)b.push('04 · MASTER'); badges.innerHTML=b.map(x=>'<span class="masterBadge">'+x+'</span>').join('');}
+  const total=(tasks||[]).length||1; const pct=Math.round((done/total)*100); const bar=document.getElementById('masterProgressBar'); const pt=document.getElementById('masterProgressText'); const score=document.getElementById('masterScoreText'); const stages=document.getElementById('masterMetricStages'); const reviewed=document.getElementById('masterMetricReviewed'); const st=document.getElementById('masterProfileStatus'); const ms=document.getElementById('masterMetricStatus'); if(bar)bar.style.width=pct+'%'; if(pt)pt.textContent=pct+'% · '+(pct===100?'траектория завершена':'траектория в работе'); if(score)score.textContent=pct+' / 100'; if(stages)stages.textContent=done+' / '+(tasks||[]).length; if(reviewed)reviewed.textContent=done; if(st)st.textContent=pct===100?'MASTER · COMPLETED':pct>=50?'MASTER · ADVANCED':'MASTER IN PROGRESS'; if(ms)ms.textContent=pct===100?'МАСТЕР':'В РАЗВИТИИ'; summary.textContent=done+' / '+(tasks||[]).length+' ЭТАПОВ ПРОЙДЕНО'; const badges=document.getElementById('masterBadges'); if(badges){const b=[]; if(done>=1)b.push('01 · DIAGNOSTIC'); if(done>=2)b.push('02 · PERSONAL PLAN'); if(done>=3)b.push('03 · CASE PRACTICE'); if(done>=4)b.push('04 · MASTER'); badges.innerHTML=b.map(x=>'<span class="masterBadge">'+x+'</span>').join('');}
   box.innerHTML=(tasks||[]).map((t,i)=>{
     const s=map.get(t.id);
     const status=s?.status==='reviewed'?'ПРОВЕРЕНО':s?.status==='needs_revision'?'НУЖНА ДОРАБОТКА':s?'ОТПРАВЛЕНО':'В РАБОТЕ';
