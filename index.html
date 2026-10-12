@@ -336,6 +336,7 @@ footer{gap:18px;flex-wrap:wrap}
 }
 </style>
 
+<style id="hidePublicVideoLibrary">#openVideoLibrary{display:none!important}</style>
 </head>
 <body><div class="screenSparkles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <header class="nav"><div class="wrap navin"><a class="logo" href="#">МЕЖДУ МИРОВ<small>ОНЛАЙН-АКАДЕМИЯ КОСМЕТОЛОГИИ</small></a><nav class="links"><a href="#courses">Курсы</a><a href="#method">Методика</a><a href="#trajectory">Траектория</a><a href="#cabinet">Кабинет</a><a href="#faq">Вопросы</a></nav><div style="display:flex;gap:10px;align-items:center"><a class="btn" href="#courses">Выбрать курс</a><button class="authBtn" id="accountBtn" type="button" onclick="window.__openAcademyAuth&&window.__openAcademyAuth(false)">Войти</button></div></div></header>
@@ -962,7 +963,7 @@ async function openStudentCourse(courseId){
      if(l.video_url.startsWith('http')) src=l.video_url;
      else {const s=await supabase.storage.from('academy-videos').createSignedUrl(l.video_url,3600);src=s.data?.signedUrl||''}
    }
-   cards.push('<article class="cabCard lessonCard"><span class="num">УРОК '+String(l.position||0).padStart(2,'0')+'</span><h4>'+esc(l.title)+'</h4><p>'+esc(l.description||'')+'</p>'+(src?'<video controls playsinline preload="metadata" src="'+esc(src)+'" style="width:100%;margin-top:14px;border-radius:8px;background:#171513"></video>':'<div class="adminNotice">Видео пока не загружено.</div>')+'<p><span class="statusDot on">'+esc(l.duration_minutes||'—')+' мин</span></p></article>');
+   let player=''; if(src){if(src.startsWith('yt:')){const vid=src.slice(3);player='<iframe title="'+esc(l.title)+'" src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(vid)+'?rel=0&playsinline=1" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="width:100%;aspect-ratio:16/9;margin-top:14px;border:0;border-radius:8px;background:#171513"></iframe>';}else if(src.includes('tiktok.com/embed/')){player='<iframe title="'+esc(l.title)+'" src="'+esc(src)+'" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="width:100%;aspect-ratio:9/16;max-height:480px;margin-top:14px;border:0;border-radius:8px;background:#171513"></iframe>';}else{player='<video controls playsinline preload="metadata" src="'+esc(src)+'" style="width:100%;margin-top:14px;border-radius:8px;background:#171513"></video>';}} cards.push('<article class="cabCard lessonCard"><span class="num">УРОК '+String(l.position||0).padStart(2,'0')+'</span><h4>'+esc(l.title)+'</h4><p>'+esc(l.description||'')+'</p>'+(player||'<div class="adminNotice">Видео пока не загружено.</div>')+'<p><span class="statusDot on">'+esc(l.duration_minutes||'—')+' мин</span></p></article>');
  }
  host.innerHTML='<div style="grid-column:1/-1"><button class="miniBtn" id="backToCourses">← Все мои курсы</button></div>'+cards.join('');
  document.getElementById('backToCourses').onclick=async()=>loadCabinet((await supabase.auth.getUser()).data.user);
