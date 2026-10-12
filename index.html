@@ -807,5 +807,40 @@ window.__openAcademyAuth=function(admin){
   setTimeout(initOwnerSidebarToggle,500);
 })();
 </script>
+
+<script id="academyVisualControl">
+(function(){
+ const KEY='mmAcademyVisualSettingsV1';
+ const defaults={bg:'#f3efe7',paper:'#fffdf9',ink:'#272522',gold:'#d8b86f',heroImage:'',gallery:[]};
+ function read(){try{return Object.assign({},defaults,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return {...defaults}}}
+ function apply(v){
+  const root=document.documentElement;
+  root.style.setProperty('--bg',v.bg);root.style.setProperty('--paper',v.paper);root.style.setProperty('--ink',v.ink);root.style.setProperty('--gold',v.gold);
+  if(v.heroImage){const h=document.querySelector('.heroCard');if(h){h.style.backgroundImage='linear-gradient(180deg,rgba(30,25,20,.04),rgba(30,25,20,.25)),url("'+v.heroImage+'")';h.style.backgroundSize='cover';h.style.backgroundPosition='center';}}
+  else {const h=document.querySelector('.heroCard');if(h){h.style.backgroundImage='';h.style.backgroundSize='';}}
+ }
+ function save(v){localStorage.setItem(KEY,JSON.stringify(v));apply(v)}
+ function makePanel(){
+  const panel=document.getElementById('adminPanel'); if(!panel||document.getElementById('visualControlCard'))return;
+  const host=panel.querySelector('.adminCenter')||panel;
+  const card=document.createElement('div');card.id='visualControlCard';card.className='adminTools';
+  card.innerHTML='<div class="adminToolbar"><div><div class="eyebrow">ВИЗУАЛЬНЫЙ РЕДАКТОР</div><h3 style="font:30px Georgia;margin:8px 0">Фон и изображения</h3><p style="color:var(--muted);font-size:13px;line-height:1.6">Меняйте цвета и загружайте базовые изображения. Изменения сохраняются в этом браузере.</p></div></div><div class="designGrid"><label>Фон сайта<input id="mmBg" type="color"></label><label>Карточки<input id="mmPaper" type="color"></label><label>Текст<input id="mmInk" type="color"></label><label>Золотой акцент<input id="mmGold" type="color"></label></div><div style="margin-top:20px;padding:18px;border:1px solid var(--line);background:#fffdf9"><b style="font:20px Georgia">Главное изображение</b><p style="font-size:12px;color:var(--muted)">Загрузите фотографию для крупного визуального блока на главной странице.</p><input id="mmHeroUpload" type="file" accept="image/*" style="max-width:100%;padding:10px;border:1px solid var(--line)"><div id="mmHeroPreview" style="margin-top:12px"></div><div class="adminActions" style="margin-top:12px"><button class="miniBtn" id="mmResetHero" type="button">Убрать изображение</button><button class="miniBtn" id="mmResetAll" type="button">Сбросить дизайн</button></div></div><div style="margin-top:20px;padding:18px;border:1px solid var(--line);background:#fffdf9"><b style="font:20px Georgia">Библиотека базовых картинок</b><p style="font-size:12px;color:var(--muted)">Добавляйте фотографии для дальнейшего использования в дизайне. Файлы сохраняются локально в браузере и не становятся автоматически доступными посетителям сайта.</p><input id="mmGalleryUpload" type="file" accept="image/*" multiple style="max-width:100%;padding:10px;border:1px solid var(--line)"><div id="mmGallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:12px"></div></div><p id="mmVisualNotice" class="adminNotice" style="margin-top:12px">Готово к настройке.</p>';
+  host.appendChild(card);
+  const v=read();['bg','paper','ink','gold'].forEach(k=>{const el=document.getElementById('mm'+k[0].toUpperCase()+k.slice(1));el.value=v[k];el.addEventListener('input',()=>{const n=read();n[k]=el.value;save(n);notice('Цвет применён.');});});
+  function notice(t){document.getElementById('mmVisualNotice').textContent=t}
+  function previewHero(){const box=document.getElementById('mmHeroPreview');box.innerHTML=v.heroImage?'<img alt="Предпросмотр главного изображения" src="'+v.heroImage+'" style="width:100%;max-height:220px;object-fit:cover;border:1px solid var(--gold2)">':'<div style="padding:18px;background:#f4eee4;color:#77716a;font-size:12px">Используется исходный визуал сайта</div>'}
+  function renderGallery(){const g=document.getElementById('mmGallery');g.innerHTML='';v.gallery.forEach((src,i)=>{const item=document.createElement('div');item.innerHTML='<img alt="Базовое изображение '+(i+1)+'" src="'+src+'" style="width:100%;height:100px;object-fit:cover;border:1px solid var(--line)"><button type="button" class="miniBtn" style="width:100%;margin-top:4px">Удалить</button>';item.querySelector('button').onclick=()=>{v.gallery.splice(i,1);save(v);renderGallery();notice('Изображение удалено из библиотеки браузера.')};g.appendChild(item)})}
+  document.getElementById('mmHeroUpload').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;if(!f.type.startsWith('image/'))return notice('Выберите файл изображения.');if(f.size>2500000)return notice('Файл больше 2,5 МБ. Уменьшите его и загрузите снова.');const r=new FileReader();r.onload=()=>{v.heroImage=r.result;save(v);previewHero();notice('Главное изображение применено в этом браузере.')};r.readAsDataURL(f)});
+  document.getElementById('mmGalleryUpload').addEventListener('change',e=>{const files=Array.from(e.target.files||[]);if(files.length+v.gallery.length>12)return notice('В библиотеке можно хранить до 12 изображений.');let pending=files.length;if(!pending)return;files.forEach(f=>{if(!f.type.startsWith('image/')||f.size>1200000){pending--;if(!pending){renderGallery();notice('Часть файлов пропущена: допустимы изображения до 1,2 МБ.')}return}const r=new FileReader();r.onload=()=>{v.gallery.push(r.result);pending--;if(!pending){save(v);renderGallery();notice('Изображения добавлены в локальную библиотеку.')}};r.readAsDataURL(f)})});
+  document.getElementById('mmResetHero').onclick=()=>{v.heroImage='';save(v);previewHero();notice('Главное изображение сброшено.')};
+  document.getElementById('mmResetAll').onclick=()=>{v={...defaults,gallery:[]};save(v);['bg','paper','ink','gold'].forEach(k=>document.getElementById('mm'+k[0].toUpperCase()+k.slice(1)).value=v[k]);previewHero();renderGallery();notice('Настройки сброшены.')};
+  apply(v);previewHero();renderGallery();
+ }
+ function init(){makePanel();if(!document.getElementById('visualControlCard'))setTimeout(makePanel,1000)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+ new MutationObserver(()=>{if(document.getElementById('adminPanel')&&!document.getElementById('visualControlCard'))makePanel()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body>
 </html>
