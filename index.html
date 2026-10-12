@@ -854,7 +854,7 @@ window.__openAcademyAuth=function(admin){
  }
  function save(v){localStorage.setItem(KEY,JSON.stringify(v));apply(v)}
  function makePanel(){
-  const path=location.pathname.replace(/\/+$/,'')); const ownerRoute=new URLSearchParams(location.search).get('owner')==='1'||path==='/owner'||path==='/admin'; if(!ownerRoute)return;
+  const path=location.pathname.replace(/\/+$/,''); const ownerRoute=new URLSearchParams(location.search).get('owner')==='1'||path==='/owner'||path==='/admin'; if(!ownerRoute)return;
   const panel=document.getElementById('adminPanel'); if(!panel||document.getElementById('visualControlCard'))return;
   const card=document.createElement('aside');card.id='visualControlCard';card.className='adminTools mmVisualDrawer';card.setAttribute('aria-label','Визуальный редактор сайта');
   const toggle=document.createElement('button');toggle.type='button';toggle.id='mmVisualDrawerToggle';toggle.className='mmVisualDrawerToggle';toggle.setAttribute('aria-expanded','false');toggle.innerHTML='<span class="mmDrawerIcon">⚙</span><span>Дизайн сайта</span><span class="mmDrawerChevron">‹</span>';toggle.setAttribute('aria-label','Открыть панель дизайна');
