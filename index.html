@@ -406,6 +406,8 @@ function openAuth(next='login',admin=false){
   emailInput.placeholder=adminMode?'Email владельца':(mode==='signup'?'Email или телефон в международном формате (+...)':'Email или телефон в международном формате (+...)');
   emailInput.autocomplete='email tel';
   emailInput.value='';
+  emailInput.required=true;
+  nameInput.required=mode!=='login'&&!adminMode;
   emailInput.style.display='block';
   if(otpInput){otpInput.value='';otpInput.style.display='none';otpInput.required=false;}
   passwordInput.style.display='block';
@@ -484,7 +486,7 @@ form.onsubmit=async(e)=>{
           mode='verifyOtp';
           title.textContent='Подтвердите телефон';
           intro.textContent='Введите код из SMS, отправленного на '+phone+'.';
-          emailInput.style.display='none';nameInput.style.display='none';passwordInput.style.display='none';passwordInput.required=false;
+          emailInput.style.display='none';emailInput.required=false;nameInput.style.display='none';nameInput.required=false;passwordInput.style.display='none';passwordInput.required=false;
           if(otpInput){otpInput.style.display='block';otpInput.required=true;otpInput.focus();}
           submit.textContent='Подтвердить телефон';switchBtn.style.display='none';forgotBtn.style.display='none';
           msg.textContent='Аккаунт создан. Остался один шаг — подтверждение номера.';
