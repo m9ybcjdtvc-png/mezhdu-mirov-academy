@@ -505,7 +505,8 @@ async function renderAdminEditor(){
 }
 
 
-async function renderAdminStudents(){const box=document.getElementById('adminStudentList');if(!box)return;const {data:students,error}=await supabase.from('profiles').select('id,full_name,phone,role,created_at').neq('role','admin').order('created_at',{ascending:false});if(error){box.innerHTML='<div class="adminNotice">Ошибка: '+esc(error.message)+'</div>';return}box.innerHTML='<table class="adminTable"><thead><tr><th>Имя</th><th>Телефон</th><th>Роль</th><th>Регистрация</th></tr></thead><tbody>'+(students||[]).map(s=>'<tr><td><b>'+esc(s.full_name||'Без имени')+'</b></td><td>'+esc(s.phone||'—')+'</td><td>Ученик</td><td>'+new Date(s.created_at).toLocaleDateString('ru-RU')+'</td></tr>').join('')+'</tbody></table>'}\nasync function renderAdminVideos(){
+async function renderAdminStudents(){const box=document.getElementById('adminStudentList');if(!box)return;const {data:students,error}=await supabase.from('profiles').select('id,full_name,phone,role,created_at').neq('role','admin').order('created_at',{ascending:false});if(error){box.innerHTML='<div class="adminNotice">Ошибка: '+esc(error.message)+'</div>';return}box.innerHTML='<table class="adminTable"><thead><tr><th>Имя</th><th>Телефон</th><th>Роль</th><th>Регистрация</th></tr></thead><tbody>'+(students||[]).map(s=>'<tr><td><b>'+esc(s.full_name||'Без имени')+'</b></td><td>'+esc(s.phone||'—')+'</td><td>Ученик</td><td>'+new Date(s.created_at).toLocaleDateString('ru-RU')+'</td></tr>').join('')+'</tbody></table>'}
+async function renderAdminVideos(){
  const box=document.getElementById('adminVideoList'); if(!box)return;
  const [{data:lessons,error},{data:courses}]=await Promise.all([
    supabase.from('lessons').select('id,title,course_id,video_url,duration_minutes,position,published,created_at').order('course_id').order('position'),
