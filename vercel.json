@@ -1,9 +1,29 @@
 {
   "outputDirectory": ".",
   "rewrites": [
-    { "source": "/owner", "destination": "/index.html" },
-    { "source": "/owner/", "destination": "/index.html" },
-    { "source": "/admin", "destination": "/index.html" },
-    { "source": "/admin/", "destination": "/index.html" }
+    {
+      "source": "/owner",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/owner/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/student",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/student/",
+      "destination": "/index.html"
+    }
   ]
 }
