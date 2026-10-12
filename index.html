@@ -282,6 +282,29 @@ footer{gap:18px;flex-wrap:wrap}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 
+
+<style>
+/* Curated public video library — lightweight, responsive, unified academy styling */
+.openVideoLibrary{padding:86px 0;background:linear-gradient(180deg,#fbf8f2 0%,#f4eee4 100%);border-top:1px solid #e7ddcc;border-bottom:1px solid #e7ddcc}
+.openVideoLibrary .videoIntro{max-width:720px;margin:0 auto 30px;text-align:center}
+.openVideoLibrary .videoIntro .sub{margin-left:auto;margin-right:auto}
+.videoLibraryGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.videoLibraryCard{overflow:hidden;background:#fffdfa;border:1px solid #e6dccb;border-radius:16px;box-shadow:0 8px 28px rgba(63,48,27,.055);min-width:0}
+.videoLibraryMedia{aspect-ratio:16/9;background:#181612;overflow:hidden}
+.videoLibraryMedia iframe{display:block;width:100%;height:100%;border:0}
+.videoLibraryCard.glassVideo .videoLibraryMedia{aspect-ratio:9/16;max-height:380px}
+.videoLibraryCard.glassVideo .videoLibraryMedia iframe{max-width:100%;margin:auto}
+.videoLibraryBody{padding:19px}
+.videoLibraryTag{display:inline-block;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#92713b;font-weight:750;margin-bottom:9px}
+.videoLibraryBody h3{font:23px Georgia,serif;line-height:1.15;margin:0 0 9px;color:#29241d}
+.videoLibraryBody p{font-size:13px;line-height:1.6;color:#756d61;margin:0 0 15px}
+.videoLibraryMeta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.videoLibrarySource{font-size:11px;color:#8b8275}
+.videoLibraryLink{font-size:12px;font-weight:700;color:#775b2c;text-decoration:none;border-bottom:1px solid #c7ae7e;padding-bottom:2px}
+.videoLibraryNote{margin:22px auto 0;max-width:900px;font-size:12px;line-height:1.65;color:#756d61;text-align:center}
+@media(max-width:980px){.videoLibraryGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.openVideoLibrary{padding:64px 0}}
+@media(max-width:620px){.videoLibraryGrid{grid-template-columns:1fr}.openVideoLibrary{padding:52px 0}.videoLibraryCard.glassVideo .videoLibraryMedia{aspect-ratio:16/9;max-height:none}}
+</style>
 </head>
 <body><div class="screenSparkles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <header class="nav"><div class="wrap navin"><a class="logo" href="#">МЕЖДУ МИРОВ<small>ОНЛАЙН-АКАДЕМИЯ КОСМЕТОЛОГИИ</small></a><nav class="links"><a href="#courses">Курсы</a><a href="#method">Методика</a><a href="#trajectory">Траектория</a><a href="#cabinet">Кабинет</a><a href="#faq">FAQ</a></nav><div style="display:flex;gap:10px;align-items:center"><a class="btn" href="#courses">Выбрать курс</a><button class="authBtn" id="accountBtn" type="button" onclick="window.__openAcademyAuth&&window.__openAcademyAuth(false)">Войти</button></div></div></header>
@@ -329,6 +352,44 @@ footer{gap:18px;flex-wrap:wrap}
 </div></div></section>
 <section id="coursePages" class="coursePages"><div class="wrap"><div class="eyebrow">ПРОГРАММЫ · ПОДРОБНО</div><h2 class="title">Выберите направление</h2><p class="sub">Каждая программа будет открываться как отдельная учебная страница с модулями, содержанием, стоимостью и доступом к обучению.</p><div class="coursePageGrid"><article class="coursePage"><span class="num">START · 6 МОДУЛЕЙ</span><h3>База косметологии</h3><p>Фундаментальная программа для системного входа в профессию.</p><div class="moduleList"><b>01</b><span>Анатомическая база и профессиональная логика</span><b>02</b><span>Кожа: диагностика и оценка состояния</span><b>03</b><span>Основные косметологические протоколы</span><b>04</b><span>Показания, ограничения и безопасность</span><b>05</b><span>Коммуникация и работа с клиентом</span><b>06</b><span>Алгоритм построения профессиональной работы</span></div><div class="coursePageBottom"><strong>от 19 900 ₽</strong><button class="btn courseInfoBtn" data-course="START">Подробнее</button></div></article><article class="coursePage featured"><span class="num">PROFESSIONAL · 7 МОДУЛЕЙ</span><h3>Контурная пластика</h3><p>Системный подход к планированию эстетической коррекции.</p><div class="moduleList"><b>01</b><span>Анатомия лица и ключевые зоны</span><b>02</b><span>Пропорции и эстетическая оценка</span><b>03</b><span>Планирование коррекции</span><b>04</b><span>Работа с зонами лица</span><b>05</b><span>Последовательность профессионального протокола</span><b>06</b><span>Оценка результата и коррекция тактики</span><b>07</b><span>Разбор клинических ситуаций</span></div><div class="coursePageBottom"><strong>29 900 ₽</strong><button class="btn courseInfoBtn" data-course="PROFESSIONAL">Подробнее</button></div></article><article class="coursePage"><span class="num">ADVANCED · 8 МОДУЛЕЙ</span><h3>Комбинированное омоложение</h3><p>Комплексная стратегия работы с возрастными изменениями.</p><div class="moduleList"><b>01</b><span>Оценка состояния кожи и тканей</span><b>02</b><span>Возрастные изменения и приоритеты</span><b>03</b><span>Построение anti-age стратегии</span><b>04</b><span>Комбинирование современных методик</span><b>05</b><span>Последовательность процедур</span><b>06</b><span>Персонализация программы</span><b>07</b><span>Контроль динамики результата</span><b>08</b><span>Формирование комплексного плана</span></div><div class="coursePageBottom"><strong>34 900 ₽</strong><button class="btn courseInfoBtn" data-course="ADVANCED">Подробнее</button></div></article></div></div></section><section id="method" class="steps"><div class="wrap"><div class="eyebrow">Методология</div><h2 class="title">Обучение, которое удобно встроить в работу</h2><div class="step"><b>01</b><div><h3>Выбираете программу</h3><p>Выбираете курс и оформляете оплату.</p></div></div><div class="step"><b>02</b><div><h3>Смотрите уроки 15–30 минут</h3><p>Короткие видеоуроки удобно смотреть с телефона, планшета или компьютера.</p></div></div><div class="step"><b>03</b><div><h3>Закрепляете знания по модулям</h3><p>Материалы и прогресс обучения будут собраны в личном кабинете.</p></div></div><div class="step"><b>04</b><div><h3>Получаете сертификат</h3><p>После прохождения программы сертификат формируется в личном кабинете.</p></div></div></div></section>
 <section id="academyTrust" class="academyTrust"><div class="wrap"><div class="eyebrow">ПРОЗРАЧНОЕ ОБУЧЕНИЕ</div><h2 class="title">Понимайте, за что платите.</h2><p class="sub">До покупки вы знакомитесь с содержанием программы, форматом уроков и своим маршрутом обучения. После подтверждения оплаты доступ должен появляться в личном кабинете.</p><div class="trustGrid"><article class="trustCard"><span>01</span><h3>Понятная программа</h3><p>Модули, темы и ожидаемые учебные результаты — до оформления заказа.</p></article><article class="trustCard"><span>02</span><h3>Обучение в своём темпе</h3><p>Видеоуроки можно проходить последовательно, возвращаясь к материалам по мере необходимости.</p></article><article class="trustCard"><span>03</span><h3>Прогресс и документы</h3><p>В кабинете предусмотрены купленные курсы, прогресс занятий и выданные сертификаты.</p></article><article class="trustCard"><span>04</span><h3>Безопасность прежде всего</h3><p>Материалы по инъекционным и аппаратным методикам предназначены для специалистов с соответствующей подготовкой и допуском.</p></article></div><div class="trustFoot"><b>Важно:</b> реальный приём платежей ещё требует подключения платёжного провайдера. Мы не будем показывать фиктивную оплату или открывать платный доступ без подтверждения транзакции.</div></div></section>
+
+<section id="openVideoLibrary" class="openVideoLibrary">
+  <div class="wrap">
+    <div class="videoIntro">
+      <div class="eyebrow">ВИДЕОПОГРУЖЕНИЕ</div>
+      <h2 class="title">Один ориентир для каждого направления</h2>
+      <p class="sub">Подборка открытых видео от профильных авторов: чтобы познакомиться с тематикой программ и увидеть, как устроено профессиональное обучение.</p>
+    </div>
+    <div class="videoLibraryGrid">
+      <article class="videoLibraryCard">
+        <div class="videoLibraryMedia"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/KiQKLhyDwpE" title="Анатомия лица для косметологов — Первый Профессиональный Институт Эстетики" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+        <div class="videoLibraryBody"><span class="videoLibraryTag">START · БАЗА</span><h3>Анатомия лица для косметологов</h3><p>Вводный материал о строении лица и роли анатомии в эстетической косметологии.</p><div class="videoLibraryMeta"><span class="videoLibrarySource">Первый Профессиональный Институт Эстетики</span><a class="videoLibraryLink" href="https://www.youtube.com/watch?v=KiQKLhyDwpE" target="_blank" rel="noopener noreferrer">Открыть источник ↗</a></div></div>
+      </article>
+      <article class="videoLibraryCard">
+        <div class="videoLibraryMedia"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/75ObAiOdV48" title="Top 6 Aesthetics Anatomy Lessons — Dr Tim Pearce" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+        <div class="videoLibraryBody"><span class="videoLibraryTag">PROFESSIONAL · СПЕЦИАЛИЗАЦИЯ</span><h3>Шесть ключевых уроков по анатомии</h3><p>Подборка анатомических тем для специалистов, которые углубляют знания об эстетической коррекции.</p><div class="videoLibraryMeta"><span class="videoLibrarySource">Dr Tim Pearce · English</span><a class="videoLibraryLink" href="https://www.youtube.com/watch?v=75ObAiOdV48" target="_blank" rel="noopener noreferrer">Открыть источник ↗</a></div></div>
+      </article>
+      <article class="videoLibraryCard">
+        <div class="videoLibraryMedia"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/dPbQWrd6iZs" title="Facial Muscle Anatomy — Dr Tim Pearce" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+        <div class="videoLibraryBody"><span class="videoLibraryTag">ADVANCED · ПРОДВИНУТЫЙ УРОВЕНЬ</span><h3>Мышцы лица: анатомический обзор</h3><p>Визуальный разбор мимических мышц как основы углублённого понимания эстетических задач.</p><div class="videoLibraryMeta"><span class="videoLibrarySource">Dr Tim Pearce · English</span><a class="videoLibraryLink" href="https://www.youtube.com/watch?v=dPbQWrd6iZs" target="_blank" rel="noopener noreferrer">Открыть источник ↗</a></div></div>
+      </article>
+      <article class="videoLibraryCard">
+        <div class="videoLibraryMedia"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/CN17oi8Z2Lg" title="Botox Injection Depth Masterclass — Dr Tim Pearce" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+        <div class="videoLibraryBody"><span class="videoLibraryTag">BOTULINUM · ДЛЯ ПОДГОТОВЛЕННЫХ СПЕЦИАЛИСТОВ</span><h3>Ботулинотерапия: глубина и анатомия</h3><p>Профессиональный разбор анатомических факторов и рисков. Не является инструкцией для самостоятельного выполнения инъекций.</p><div class="videoLibraryMeta"><span class="videoLibrarySource">Dr Tim Pearce · English</span><a class="videoLibraryLink" href="https://www.youtube.com/watch?v=CN17oi8Z2Lg" target="_blank" rel="noopener noreferrer">Открыть источник ↗</a></div></div>
+      </article>
+      <article class="videoLibraryCard glassVideo">
+        <div class="videoLibraryMedia"><iframe loading="lazy" src="https://www.tiktok.com/player/v1/7536359408217935159?autoplay=0&loop=0" title="Glass Skin facial treatment — public video" allow="fullscreen; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+        <div class="videoLibraryBody"><span class="videoLibraryTag">GLASS SKIN · УХОД ЗА КОЖЕЙ</span><h3>Визуальная демонстрация Glass Skin</h3><p>Короткий ознакомительный ролик о визуальной эстетике процедуры. Не заменяет учебный протокол, оценку кожи и подготовку специалиста.</p><div class="videoLibraryMeta"><span class="videoLibrarySource">Michelle Hashimi · TikTok</span><a class="videoLibraryLink" href="https://www.tiktok.com/@michellehashimi/video/7536359408217935159" target="_blank" rel="noopener noreferrer">Открыть источник ↗</a></div></div>
+      </article>
+      <article class="videoLibraryCard">
+        <div class="videoLibraryMedia"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/zFm9RjrHwbQ" title="Mastering Patient Consultations and Expert Injection Planning — Dr Tim Pearce" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+        <div class="videoLibraryBody"><span class="videoLibraryTag">MASTER · ЭКСПЕРТНОЕ МЫШЛЕНИЕ</span><h3>Консультация и планирование коррекции</h3><p>Как анализировать запрос пациента, обсуждать ожидания и выстраивать целостный план эстетической работы.</p><div class="videoLibraryMeta"><span class="videoLibrarySource">Dr Tim Pearce · English</span><a class="videoLibraryLink" href="https://www.youtube.com/watch?v=zFm9RjrHwbQ" target="_blank" rel="noopener noreferrer">Открыть источник ↗</a></div></div>
+      </article>
+    </div>
+    <p class="videoLibraryNote">Все ролики — внешние материалы их авторов, встроенные с сохранением ссылок на оригиналы. Они не являются авторскими уроками академии и не входят в платные программы. Материалы по инъекционным методикам предназначены только для соответствующим образом подготовленных специалистов; обучение требует практической подготовки и соблюдения местных правил допуска.</p>
+  </div>
+</section>
+
 <section id="cabinet"><div class="wrap"><div class="heroGrid"><div><div class="eyebrow">Личный кабинет</div><h2 class="title">Ваше обучение — всегда под рукой</h2><p class="sub">Архитектура платформы подготовлена для защищённых видео, прогресса обучения, материалов и сертификатов.</p><a class="btn" href="#courses">Начать обучение</a></div><div class="card"><span class="num">МОИ КУРСЫ</span><h3>Контурная пластика</h3><p>Модуль 3 из 5</p><div style="height:8px;background:#e8dfd5;margin:18px 0"><div style="height:100%;width:68%;background:#b79b69"></div></div><p>Прогресс · 68%</p></div></div></div>
 <div id="paymentNotice" class="paymentNotice" style="display:none"></div><div id="cabinetPanel" class="cabinetPanel">
   <div class="studentLayout">
