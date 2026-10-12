@@ -633,7 +633,7 @@ async function openStudentCourse(courseId){
    cards.push('<article class="cabCard lessonCard"><span class="num">УРОК '+String(l.position||0).padStart(2,'0')+'</span><h4>'+esc(l.title)+'</h4><p>'+esc(l.description||'')+'</p>'+(src?'<video controls playsinline preload="metadata" src="'+esc(src)+'" style="width:100%;margin-top:14px;border-radius:8px;background:#171513"></video>':'<div class="adminNotice">Видео пока не загружено.</div>')+'<p><span class="statusDot on">'+esc(l.duration_minutes||'—')+' мин</span></p></article>');
  }
  host.innerHTML='<div style="grid-column:1/-1"><button class="miniBtn" id="backToCourses">← Все мои курсы</button></div>'+cards.join('');
- document.getElementById('backToCourses').onclick=()=>loadCabinet((await supabase.auth.getUser()).data.user);
+ document.getElementById('backToCourses').onclick=async()=>loadCabinet((await supabase.auth.getUser()).data.user);
 }
 async function loadMasterCertificate(user){
  const host=document.getElementById('masterCertificateMount'); if(!host||!user)return;
