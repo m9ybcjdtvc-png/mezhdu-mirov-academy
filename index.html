@@ -318,11 +318,28 @@ footer{gap:18px;flex-wrap:wrap}
 .videoLibraryMedia iframe{display:block;width:100%;height:100%;min-height:190px;border:0}
 @media(prefers-reduced-motion:reduce){.videoPreviewButton img{transition:none}}
 </style>
+
+<style id="mobileHeaderAndTopNoticeFix">
+/* Keep the public landing page aligned and remove the extra stories strip above the hero. */
+@media(max-width:900px){
+  .navin{height:82px!important;min-height:82px!important;flex-wrap:nowrap!important;padding-top:10px!important;padding-bottom:10px!important;gap:10px}
+  .nav .links{display:none!important}
+  .navin>.logo{font-size:15px;letter-spacing:2px;white-space:nowrap}
+  .navin>.logo small{font-size:8px;letter-spacing:1.5px}
+  .navin>div:last-child{flex-shrink:0;margin-left:auto}
+}
+@media(max-width:420px){
+  .wrap{padding-left:18px;padding-right:18px}
+  .navin>.logo{font-size:13px;letter-spacing:1.5px}
+  .navin>.logo small{font-size:7px;letter-spacing:1px}
+  .nav .authBtn{padding:8px 9px;font-size:10px}
+}
+</style>
+
 </head>
 <body><div class="screenSparkles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <header class="nav"><div class="wrap navin"><a class="logo" href="#">МЕЖДУ МИРОВ<small>ОНЛАЙН-АКАДЕМИЯ КОСМЕТОЛОГИИ</small></a><nav class="links"><a href="#courses">Курсы</a><a href="#method">Методика</a><a href="#trajectory">Траектория</a><a href="#cabinet">Кабинет</a><a href="#faq">Вопросы</a></nav><div style="display:flex;gap:10px;align-items:center"><a class="btn" href="#courses">Выбрать курс</a><button class="authBtn" id="accountBtn" type="button" onclick="window.__openAcademyAuth&&window.__openAcademyAuth(false)">Войти</button></div></div></header>
-<main class="gold-vein-bg"><section id="stories" class="storiesBar"><div class="wrap"><div class="storiesHead"><div><div class="eyebrow">НОВОСТИ И РАБОТЫ АКАДЕМИИ</div><h2>Работы академии</h2></div><span class="adminNotice">Новые кейсы · работы · атмосфера обучения</span></div><div id="publicStories" class="storyRail"></div></div></section>
-<section class="hero"><div class="wrap heroGrid"><div class="heroCopy"><div class="heroKicker"><div class="eyebrow">ОНЛАЙН-АКАДЕМИЯ КОСМЕТОЛОГИИ</div></div><h1>Знания,<br><em>которые меняют</em><br>профессию.</h1><p class="heroLead">Современная академия косметологии для тех, кто выбирает не просто обучение, а высокий профессиональный стандарт.</p><div class="heroMeta"><div><b>01</b><span>Система</span></div><div><b>02</b><span>Практика</span></div><div><b>03</b><span>Результат</span></div></div><div class="heroHighlights"><span>Авторская методика</span><span>Пошаговая практика</span><span>Премиальный формат</span></div><a class="btn" href="#courses">Открыть академию</a></div><div class="heroCard"><div class="heroTag">Косметология · Обучение · Профессионализм</div><div class="heroOrb heroOrbOne"></div><div class="heroOrb heroOrbTwo"></div><div class="portrait"><div class="portraitGrid"><figure><img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=1000&q=90" alt="Профессиональная beauty-модель"></figure><figure><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&q=90" alt="Профессиональная beauty-модель"></figure></div><span>Профессиональная эстетика · Практика</span></div><div class="heroSeal">АКАДЕМИЯ<br>КОСМЕТОЛОГИИ</div></div></div></section>
+<main class="gold-vein-bg"><section class="hero"><div class="wrap heroGrid"><div class="heroCopy"><div class="heroKicker"><div class="eyebrow">ОНЛАЙН-АКАДЕМИЯ КОСМЕТОЛОГИИ</div></div><h1>Знания,<br><em>которые меняют</em><br>профессию.</h1><p class="heroLead">Современная академия косметологии для тех, кто выбирает не просто обучение, а высокий профессиональный стандарт.</p><div class="heroMeta"><div><b>01</b><span>Система</span></div><div><b>02</b><span>Практика</span></div><div><b>03</b><span>Результат</span></div></div><div class="heroHighlights"><span>Авторская методика</span><span>Пошаговая практика</span><span>Премиальный формат</span></div><a class="btn" href="#courses">Открыть академию</a></div><div class="heroCard"><div class="heroTag">Косметология · Обучение · Профессионализм</div><div class="heroOrb heroOrbOne"></div><div class="heroOrb heroOrbTwo"></div><div class="portrait"><div class="portraitGrid"><figure><img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=1000&q=90" alt="Профессиональная beauty-модель"></figure><figure><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&q=90" alt="Профессиональная beauty-модель"></figure></div><span>Профессиональная эстетика · Практика</span></div><div class="heroSeal">АКАДЕМИЯ<br>КОСМЕТОЛОГИИ</div></div></div></section>
 <section class="luxuryIntro"><div class="wrap"><div class="eyebrow">Философия академии</div><div class="line"></div><h2>Эстетика начинается там, где есть система.</h2><p class="quote">«Мы соединяем современную косметологию, профессиональное мышление и культуру красивого результата.»</p></div></section>
 
 <section class="longevity" id="method">
