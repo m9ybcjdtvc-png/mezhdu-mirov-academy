@@ -487,6 +487,8 @@ form.onsubmit=async(e)=>{
         await loadAdmin(data.user);
       }else{
         closeAuth(); await loadCabinet(data.user);
+        const cabinetPanel=document.getElementById('cabinetPanel');
+        if(cabinetPanel){cabinetPanel.scrollIntoView({behavior:'smooth',block:'start'});}
       }
     }
   }catch(err){msg.textContent=err.message||'Не удалось выполнить операцию.'}
@@ -1023,5 +1025,29 @@ window.__openAcademyAuth=function(admin){
 })();
 </script>
 
+<script id="academyStudentRoute">
+(function(){
+  async function initStudentRoute(){
+    const params=new URLSearchParams(location.search);
+    const path=location.pathname.replace(/\\/+$/,'');
+    if(params.get('student')!=='1' && path!=='/student') return;
+    document.title='Кабинет ученика · МЕЖДУ МИРОВ';
+    document.body.classList.add('studentPortalMode');
+    const style=document.createElement('style');
+    style.textContent='body.studentPortalMode>header,body.studentPortalMode>footer{display:none!important}body.studentPortalMode main>section:not(#cabinet){display:none!important}body.studentPortalMode #cabinet{display:block!important;min-height:100vh;padding-top:34px}body.studentPortalMode #cabinet>.wrap>.heroGrid{display:none!important}body.studentPortalMode #cabinetPanel{margin-top:0}body.studentPortalMode .studentLayout{min-height:75vh}body.studentPortalMode .mmBackTop,body.studentPortalMode .mmScrollProgress{display:none!important}';
+    document.head.appendChild(style);
+    const {data:{user}}=await supabase.auth.getUser();
+    if(user){
+      await loadCabinet(user);
+      document.getElementById('cabinetPanel')?.scrollIntoView({block:'start'});
+    }else{
+      document.getElementById('cabinetPanel')?.classList.remove('show');
+      openAuth('login',false);
+      document.getElementById('authIntro').textContent='Войдите в аккаунт ученика, чтобы увидеть своё имя, покупки, курсы и сертификаты.';
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initStudentRoute,{once:true});else initStudentRoute();
+})();
+</script>
 </body>
 </html>
