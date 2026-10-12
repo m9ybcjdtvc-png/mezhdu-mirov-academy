@@ -1029,7 +1029,7 @@ window.__openAcademyAuth=function(admin){
 (function(){
   async function initStudentRoute(){
     const params=new URLSearchParams(location.search);
-    const path=location.pathname.replace(/\\/+$/,'');
+    const path=location.pathname.split('/').filter(Boolean).join('/');
     if(params.get('student')!=='1' && path!=='/student') return;
     document.title='Кабинет ученика · МЕЖДУ МИРОВ';
     document.body.classList.add('studentPortalMode');
