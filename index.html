@@ -687,16 +687,18 @@ supabase.auth.onAuthStateChange((event,session)=>{
     document.getElementById('adminPanel').style.display='none';
   }
 });
-const {data:{session}}=await supabase.auth.getSession();
-if(new URLSearchParams(location.search).get('reset')==='1'){
-  openAuth('login',false);
-  intro.textContent='Введите новый пароль после перехода по ссылке восстановления.';
-  passwordInput.focus();
-}
-if(session){
-  const {data:profile}=await supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
-  if(profile?.role!=='admin') await loadCabinet(session.user);
-}
+(async()=>{
+  const {data:{session}}=await supabase.auth.getSession();
+  if(new URLSearchParams(location.search).get('reset')==='1'){
+    openAuth('login',false);
+    intro.textContent='Введите новый пароль после перехода по ссылке восстановления.';
+    passwordInput.focus();
+  }
+  if(session){
+    const {data:profile}=await supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
+    if(profile?.role!=='admin') await loadCabinet(session.user);
+  }
+})();
 
 document.getElementById('newVideoBtn')?.addEventListener('click',async()=>{const box=document.getElementById('videoUploadBox');box.style.display='block';const s=document.getElementById('videoCourseSelect');const {data}=await supabase.from('courses').select('id,title').order('created_at');s.innerHTML='<option value="">Выберите курс…</option>'+(data||[]).map(x=>'<option value="'+x.id+'">'+esc(x.title)+'</option>').join('')});
 document.getElementById('cancelVideoBtn')?.addEventListener('click',()=>document.getElementById('videoUploadBox').style.display='none');
