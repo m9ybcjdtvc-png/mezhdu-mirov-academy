@@ -351,7 +351,8 @@ footer{gap:18px;flex-wrap:wrap}
     <p id="authIntro">Войдите, чтобы открыть личный кабинет и видеть своё обучение.</p>
     <form class="authForm" id="authForm">
       <input id="authName" type="text" placeholder="Имя" autocomplete="name" style="display:none">
-      <input id="authEmail" type="text" placeholder="Email или номер телефона" autocomplete="email tel" required>
+      <input id="authEmail" type="text" placeholder="Email или телефон в международном формате (+...)" autocomplete="email tel" required>
+      <input id="authOtp" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="Код из SMS" aria-label="Код подтверждения из SMS" style="display:none" maxlength="8">
       <input id="authPassword" type="password" placeholder="Пароль" autocomplete="current-password" minlength="6" required>
             <div class="authActions">
         <button class="btn" type="submit" id="authSubmit">Войти</button>
@@ -388,7 +389,13 @@ const msg=document.getElementById('authMsg');
 const otpInput=document.getElementById('authOtp');
 const otpHint=document.getElementById('authOtpHint');
 let mode='login';
+let otpPendingPhone='';
 
+function normalizePhone(value){
+  const raw=String(value||'').trim();
+  const digits=raw.replace(/\D/g,'');
+  return '+'+digits;
+}
 
 function openAuth(next='login',admin=false){
   adminMode=admin;
@@ -396,11 +403,16 @@ function openAuth(next='login',admin=false){
   document.getElementById('authEyebrow').textContent=adminMode?'МЕЖДУ МИРОВ · ПАНЕЛЬ ВЛАДЕЛЬЦА':'МЕЖДУ МИРОВ · ВХОД УЧЕНИКА';
   title.textContent=mode==='login'?'Войти':'Создать аккаунт';
   emailInput.type='text';
-  emailInput.placeholder=adminMode?'Email или номер телефона владельца':(mode==='signup'?'Email или номер телефона':'Email или номер телефона');
+  emailInput.placeholder=adminMode?'Email владельца':(mode==='signup'?'Email или телефон в международном формате (+...)':'Email или телефон в международном формате (+...)');
   emailInput.autocomplete='email tel';
   emailInput.value='';
-  intro.textContent=adminMode?'Введите номер телефона владельца и пароль. После входа откроется панель управления.':'Войдите, чтобы открыть личный кабинет и видеть своё обучение.';
-  if(mode==='signup' && !adminMode) intro.textContent='Создайте аккаунт ученика — после регистрации вы сможете войти в кабинет.';
+  emailInput.style.display='block';
+  if(otpInput){otpInput.value='';otpInput.style.display='none';otpInput.required=false;}
+  passwordInput.style.display='block';
+  passwordInput.required=true;
+  otpPendingPhone='';
+  intro.textContent=adminMode?'Введите email и пароль владельца. После входа откроется отдельная панель управления.':'Войдите, чтобы открыть личный кабинет и видеть своё обучение.';
+  if(mode==='signup' && !adminMode) intro.textContent='Создайте аккаунт ученика по email или телефону. Для телефона понадобится подтвердить код из SMS.';
   nameInput.style.display=(mode==='login'||adminMode)?'none':'block';
   nameInput.required=mode!=='login'&&!adminMode;
   submit.textContent=mode==='login'?'Войти':'Зарегистрироваться';
@@ -442,11 +454,41 @@ forgotBtn.onclick=async()=>{
 form.onsubmit=async(e)=>{
   e.preventDefault(); msg.textContent='Подождите…'; submit.disabled=true;
   try{
+    if(mode==='verifyOtp'){
+      const token=otpInput?.value.trim();
+      if(!token) throw new Error('Введите код из SMS.');
+      const {data,error}=await supabase.auth.verifyOtp({phone:otpPendingPhone,token,type:'sms'});
+      if(error) throw error;
+      if(!data.user) throw new Error('Подтверждение прошло, но аккаунт не найден. Попробуйте войти.');
+      closeAuth();form.reset();await loadCabinet(data.user);
+      document.getElementById('cabinetPanel')?.scrollIntoView({behavior:'smooth',block:'start'});
+      return;
+    }
     if(mode==='signup'){
       const identifier=emailInput.value.trim();
       const isPhone=!identifier.includes('@');
       if(isPhone){
-        throw new Error('Регистрация ученика сейчас доступна по email и паролю. Телефон можно добавить в профиле.');
+        const phone=normalizePhone(identifier);
+        if(!/^\+[1-9]\d{7,14}$/.test(phone)) throw new Error('Введите номер в международном формате, например +79991234567.');
+        const {data,error}=await supabase.auth.signUp({
+          phone,
+          password:passwordInput.value,
+          options:{data:{full_name:nameInput.value.trim(),phone}}
+        });
+        if(error) throw error;
+        if(data.session&&data.user){
+          closeAuth();form.reset();await loadCabinet(data.user);
+          document.getElementById('cabinetPanel')?.scrollIntoView({behavior:'smooth',block:'start'});
+        }else{
+          otpPendingPhone=phone;
+          mode='verifyOtp';
+          title.textContent='Подтвердите телефон';
+          intro.textContent='Введите код из SMS, отправленного на '+phone+'.';
+          emailInput.style.display='none';nameInput.style.display='none';passwordInput.style.display='none';passwordInput.required=false;
+          if(otpInput){otpInput.style.display='block';otpInput.required=true;otpInput.focus();}
+          submit.textContent='Подтвердить телефон';switchBtn.style.display='none';forgotBtn.style.display='none';
+          msg.textContent='Аккаунт создан. Остался один шаг — подтверждение номера.';
+        }
       }else{
         const {data,error}=await supabase.auth.signUp({
           email:identifier,
@@ -456,18 +498,13 @@ form.onsubmit=async(e)=>{
         if(error) throw error;
         if(data.session&&data.user){closeAuth();await loadCabinet(data.user);document.getElementById('cabinet').scrollIntoView({behavior:'smooth'});}
         else msg.textContent='Аккаунт создан. Подтвердите email по ссылке из письма, затем войдите в кабинет ученика.';
+        form.reset();
       }
-      form.reset();
     }else{
       const identifier=emailInput.value.trim();
-      if(adminMode){
-        const normalizedPhone=identifier.replace(/\D/g,'');
-        if(normalizedPhone.length < 10) throw new Error('Введите полный номер телефона владельца.');
-      }
+      if(adminMode && !identifier.includes('@')) throw new Error('Введите email владельца.');
       const isPhone=!identifier.includes('@')&&!adminMode;
-      const loginValue=isPhone
-        ? (identifier.replace(/[^\d+]/g,'').startsWith('+')?identifier.replace(/[^\d+]/g,''):'+'+identifier.replace(/\D/g,''))
-        : (adminMode?'kislyak.vova2004@mail.ru':identifier);
+      const loginValue=isPhone?normalizePhone(identifier):identifier;
       const authPayload=isPhone
         ? {phone:loginValue,password:passwordInput.value}
         : {email:loginValue,password:passwordInput.value};
