@@ -94,6 +94,40 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
 .authBtn:focus-visible{outline:1px solid rgba(193,139,45,.35);outline-offset:4px}
 @media(prefers-reduced-motion:reduce){.authBtn{animation:none !important}}
 
+
+/* Match the entire sign-in dialog to the borderless shimmering gold style */
+#authModal .authActions .btn,
+#authModal .authActions .miniBtn,
+#authModal #forgotBtn,
+#authModal #authClose{
+  appearance:none !important;
+  border:0 !important;
+  outline-color:transparent;
+  border-radius:0 !important;
+  background:linear-gradient(110deg,#a87827 0%,#e7c66e 22%,#fff0b5 40%,#c18b2d 56%,#f8e5a0 72%,#a87827 100%) !important;
+  background-size:240% 100% !important;
+  -webkit-background-clip:text !important;
+  background-clip:text !important;
+  color:transparent !important;
+  box-shadow:none !important;
+  text-shadow:none !important;
+  animation:goldTextFlow 3s ease-in-out infinite !important;
+  transition:filter .25s ease;
+}
+#authModal .authActions .btn:hover,
+#authModal .authActions .miniBtn:hover,
+#authModal #forgotBtn:hover,
+#authModal #authClose:hover{
+  transform:none !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 0 8px rgba(205,160,67,.42));
+}
+#authModal #authClose{margin-top:18px;padding:10px 0 !important}
+#authModal .authForm input{border-color:#e5d2a3;background:#fffdf8}
+@media(prefers-reduced-motion:reduce){
+ #authModal .authActions .btn,#authModal .authActions .miniBtn,#authModal #forgotBtn,#authModal #authClose{animation:none !important}
+}
+
 </style>
 <style>
 /* Luxury hero refinement */
