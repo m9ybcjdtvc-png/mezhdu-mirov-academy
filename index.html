@@ -189,7 +189,7 @@ footer{gap:18px;flex-wrap:wrap}
 
 </head>
 <body><div class="screenSparkles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-<header class="nav"><div class="wrap navin"><a class="logo" href="#">МЕЖДУ МИРОВ<small>ОНЛАЙН-АКАДЕМИЯ КОСМЕТОЛОГИИ</small></a><nav class="links"><a href="#courses">Курсы</a><a href="#method">Методика</a><a href="#trajectory">Траектория</a><a href="#cabinet">Кабинет</a><a href="#faq">FAQ</a></nav><div style="display:flex;gap:10px;align-items:center"><a class="btn" href="#courses">Выбрать курс</a><button class="authBtn" id="accountBtn" type="button" onclick="window.__openAcademyAuth&&window.__openAcademyAuth(false)">Войти</button></div></div></header>
+<header class="nav"><div class="wrap navin"><a class="logo" href="#">МЕЖДУ МИРОВ<small>ОНЛАЙН-АКАДЕМИЯ КОСМЕТОЛОГИИ</small></a><nav class="links"><a href="#courses">Курсы</a><a href="#method">Методика</a><a href="#trajectory">Траектория</a><a href="#cabinet">Кабинет</a><a href="#faq">FAQ</a></nav><div style="display:flex;gap:10px;align-items:center"><a class="btn" href="#courses">Выбрать курс</a><button class="authBtn" id="accountBtn" type="button" onclick="window.__openAcademyAuth&&window.__openAcademyAuth(false)">Вход ученика</button></div></div></header>
 <main class="gold-vein-bg"><section id="stories" class="storiesBar"><div class="wrap"><div class="storiesHead"><div><div class="eyebrow">МЕЖДУ МИРОВ · STORIES</div><h2>Работы академии</h2></div><span class="adminNotice">Новые кейсы · работы · атмосфера обучения</span></div><div id="publicStories" class="storyRail"></div></div></section>
 <section class="hero"><div class="wrap heroGrid"><div class="heroCopy"><div class="heroKicker"><div class="eyebrow">МЕЖДУ МИРОВ · PREMIUM BEAUTY ACADEMY</div></div><h1>Знания,<br><em>которые меняют</em><br>профессию.</h1><p class="heroLead">Современная академия косметологии для тех, кто выбирает не просто обучение, а высокий профессиональный стандарт.</p><div class="heroMeta"><div><b>01</b><span>Система</span></div><div><b>02</b><span>Практика</span></div><div><b>03</b><span>Результат</span></div></div><div class="heroHighlights"><span>Авторская методика</span><span>Пошаговая практика</span><span>Премиальный формат</span></div><a class="btn" href="#courses">Открыть академию</a></div><div class="heroCard"><div class="heroTag">Beauty · Education · Premium</div><div class="heroOrb heroOrbOne"></div><div class="heroOrb heroOrbTwo"></div><div class="portrait"><div class="portraitGrid"><figure><img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=1000&q=90" alt="Профессиональная beauty-модель"></figure><figure><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&q=90" alt="Профессиональная beauty-модель"></figure></div><span>Профессиональная эстетика · Практика</span></div><div class="heroSeal">EST.<br>BEAUTY<br>ACADEMY</div></div></div></section>
 <section class="luxuryIntro"><div class="wrap"><div class="eyebrow">Философия академии</div><div class="line"></div><h2>Эстетика начинается там, где есть система.</h2><p class="quote">«Мы соединяем современную косметологию, профессиональное мышление и культуру красивого результата.»</p></div></section>
@@ -674,6 +674,10 @@ async function loadCabinet(user){
   const ids=(enrollments||[]).map(x=>x.course_id);
   let courses=[];
   if(ids.length){const r=await supabase.from('courses').select('id,title,level,description').in('id',ids).eq('published',true);courses=r.data||[]}
+  const {data:progressRows}=await supabase.from('lesson_progress').select('lesson_id').eq('user_id',user.id).eq('completed',true);
+  let progressPercent=0;
+  if(ids.length){const lessonResult=await supabase.from('lessons').select('id').in('course_id',ids).eq('published',true);const totalLessons=(lessonResult.data||[]).length;const doneIds=new Set((progressRows||[]).map(x=>x.lesson_id));progressPercent=totalLessons?Math.round((lessonResult.data||[]).filter(x=>doneIds.has(x.id)).length/totalLessons*100):0;}
+  document.getElementById('studentProgress').textContent=progressPercent+'%';
   const {data:certs}=await supabase.from('certificates').select('id,course_id,certificate_number,issued_at').eq('user_id',user.id);
   const {data:orders, error:ordersError}=await supabase.from('payment_orders').select('id,course_id,amount_rub,status,provider,created_at,paid_at').eq('user_id',user.id).order('created_at',{ascending:false});
   document.getElementById('courseCount').textContent=courses.length;document.getElementById('certificateCount').textContent=(certs||[]).length;document.getElementById('profileName').textContent=displayName;document.getElementById('cabinetCards').innerHTML = courses.length ? courses.map(c=>{
@@ -747,14 +751,14 @@ async function loadMasterTasks(){
   });
 }
 
-document.getElementById('logoutBtn').onclick=async()=>{await supabase.auth.signOut();document.getElementById('cabinetPanel').classList.remove('show');accountBtn.textContent='Войти';window.scrollTo({top:0,behavior:'smooth'})};
+document.getElementById('logoutBtn').onclick=async()=>{await supabase.auth.signOut();document.getElementById('cabinetPanel').classList.remove('show');accountBtn.textContent='Вход ученика';window.scrollTo({top:0,behavior:'smooth'})};
 
 supabase.auth.onAuthStateChange((event,session)=>{
   if(session){
     accountBtn.textContent='Кабинет';
     if(event==='SIGNED_IN') supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
   }else{
-    accountBtn.textContent='Войти';
+    accountBtn.textContent='Вход ученика';
     
     document.getElementById('adminPanel').style.display='none';
   }
