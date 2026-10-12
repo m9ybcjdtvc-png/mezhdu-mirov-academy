@@ -154,6 +154,39 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
 <style id="ownerSidebarToggleStyles">
 .adminSidebarToggle{position:fixed;left:250px;top:108px;z-index:30;width:40px;height:40px;border:1px solid #b99655;background:#272522;color:#ead39d;border-radius:0 10px 10px 0;cursor:pointer;box-shadow:0 8px 22px rgba(38,36,33,.16);font-size:18px;line-height:1;transition:left .25s ease,background .2s ease}.adminSidebarToggle:hover{background:#3a3530}.adminShell.adminSidebarCollapsed .adminSidebarToggle{left:0}.adminShell.adminSidebarCollapsed .adminLayout{grid-template-columns:1fr}.adminShell.adminSidebarCollapsed .adminSidebar{display:none}@media(max-width:800px){.adminSidebarToggle{left:auto;right:14px;top:92px;border-radius:10px}.adminShell.adminSidebarCollapsed .adminSidebarToggle{left:auto;right:14px}.adminShell.adminSidebarCollapsed .adminMain{width:100%}}
 </style>
+
+<style id="mmPolishStyles">
+:root{scroll-padding-top:96px}
+::selection{background:#d8b86f55;color:#272522}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #a77b35;outline-offset:3px}
+.nav{box-shadow:0 8px 28px rgba(49,39,25,.045)}
+.nav .links a{position:relative;white-space:nowrap;transition:color .2s ease}
+.nav .links a:after{content:"";position:absolute;left:0;right:100%;bottom:-7px;height:1px;background:#bd984e;transition:right .22s ease}
+.nav .links a:hover{color:#292622}
+.nav .links a:hover:after{right:0}
+.heroCard{border-radius:2px}
+.heroSeal{box-shadow:0 6px 28px rgba(72,53,29,.08)}
+.course{border-radius:3px}
+.course .price{position:relative;z-index:1}
+.course:hover{border-color:#d4b56f}
+.mmCourseFilters{display:flex;flex-wrap:wrap;gap:9px;margin:26px 0 0}
+.mmCourseFilter{appearance:none;border:1px solid #d9cfbd;background:rgba(255,253,249,.78);color:#625b50;padding:11px 16px;border-radius:999px;font:12px Arial,sans-serif;cursor:pointer;transition:all .2s ease}
+.mmCourseFilter:hover,.mmCourseFilter[aria-pressed="true"]{background:#292724;color:#fffdf8;border-color:#292724;box-shadow:0 7px 20px rgba(38,36,33,.12)}
+.course[hidden]{display:none!important}
+.mmFilterCount{align-self:center;color:#84796a;font-size:11px;margin-left:auto}
+.q b{display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer}
+.q b:after{content:"+";flex:none;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--gold2);border-radius:50%;font:18px Georgia;color:#997638;transition:transform .2s ease}
+.q.mmFaqOpen b:after{content:"−";background:#292724;color:#fffdf8;border-color:#292724}
+.q p{margin-bottom:0}
+.mmScrollProgress{position:fixed;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,#a77b35,#ecd8aa);z-index:10010;pointer-events:none}
+.mmBackTop{position:fixed;right:22px;bottom:22px;z-index:35;width:44px;height:44px;border:1px solid #d8c49b;border-radius:50%;background:rgba(255,253,249,.94);color:#292724;box-shadow:0 10px 30px rgba(38,36,33,.12);font-size:20px;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease,visibility .2s ease}
+.mmBackTop.mmVisible{opacity:1;visibility:visible;transform:translateY(0)}
+footer{gap:18px;flex-wrap:wrap}
+@media(max-width:900px){.nav .links{scrollbar-width:none}.nav .links::-webkit-scrollbar{display:none}.heroGrid{gap:35px}.mmFilterCount{width:100%;margin-left:0}.mmBackTop{right:14px;bottom:14px}}
+@media(max-width:640px){.mmCourseFilters{gap:7px}.mmCourseFilter{padding:10px 13px;font-size:11px}.hero h1{font-size:clamp(42px,12vw,60px)}.heroMeta{gap:16px}.heroMeta b{font-size:15px}.heroCard{min-height:430px}.portrait{height:360px}.course{padding:23px}.course .price{font-size:18px}.title{font-size:35px}section{padding:68px 0}.mmBackTop{width:40px;height:40px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+
 </head>
 <body><div class="screenSparkles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <header class="nav"><div class="wrap navin"><a class="logo" href="#">МЕЖДУ МИРОВ<small>ОНЛАЙН-АКАДЕМИЯ КОСМЕТОЛОГИИ</small></a><nav class="links"><a href="#courses">Курсы</a><a href="#method">Методика</a><a href="#trajectory">Траектория</a><a href="#cabinet">Кабинет</a><a href="#faq">FAQ</a></nav><div style="display:flex;gap:10px;align-items:center"><a class="btn" href="#courses">Выбрать курс</a><button class="authBtn" id="accountBtn" type="button" onclick="window.__openAcademyAuth&&window.__openAcademyAuth(false)">Войти</button></div></div></header>
@@ -191,7 +224,7 @@ footer{border-top:1px solid var(--line);padding:35px 0;color:var(--muted);font-s
 </section>
 <div class="trust"><div class="wrap trustin"><div><b>24/7</b><span>доступ к обучению</span></div><div><b>15–30 мин</b><span>длительность урока</span></div><div><b>100%</b><span>онлайн-формат</span></div><div><b>RU</b><span>Россия · ₽</span></div></div></div>
 <section><div class="wrap"><div class="eyebrow">Траектория</div><h2 class="title">Ваш следующий профессиональный уровень</h2><p class="sub">Обучение выстроено как единая система — от фундаментальной базы до продвинутой практики.</p><div class="levels"><div class="levelFeature"><span class="num">01 · START</span><h3>База косметологии</h3><p>Фундаментальные знания, диагностика, логика протоколов и профессиональное мышление.</p></div><div class="levelSide"><article class="card"><span class="num">02 · PROFESSIONAL</span><h3>Контурная пластика</h3><p>Системные протоколы и работа с ключевыми зонами.</p></article><article class="card"><span class="num">03 · ADVANCED</span><h3>Комбинированное омоложение</h3><p>Комплексные авторские схемы и продвинутый уровень.</p></article></div></div></div></section>
-<section id="courses"><div class="wrap"><div class="eyebrow">Академия</div><h2 class="title">TOP-LEVEL COSMETOLOGY</h2><p class="sub">Флагманская программа «МЕЖДУ МИРОВ» для косметологов, которые хотят систематизировать знания, усилить практику и перейти на новый профессиональный уровень.</p><div class="flagship"><div class="flagshipVisual"><div class="flagshipLabel">FLAGSHIP PROGRAM</div><div class="flagshipTitle">TOP-LEVEL<br><em>COSMETOLOGY</em></div><div class="flagshipGlow"></div></div><div class="flagshipContent"><div class="eyebrow">МЕЖДУ МИРОВ · ТОП-УРОВЕНЬ</div><h3>Комплексная программа для роста косметолога.</h3><p>Не только процедуры. Мы собираем в одной системе профессиональную базу, практическое мышление, работу с клиентом, визуальную подачу и развитие личного бренда.</p><div class="flagshipGrid"><div><b>01</b><span>Профессиональная база</span></div><div><b>02</b><span>Практические протоколы</span></div><div><b>03</b><span>Продвижение и портфолио</span></div><div><b>04</b><span>Профессиональный рост</span></div></div><a class="btn" href="#method">Смотреть программу</a></div></div><div class="goldline"></div><div class="eyebrow">Будущие направления</div><p class="sub">Выберите программу и откройте доступ к следующему уровню профессионального развития.</p><div class="courses" style="opacity:.78">
+<section id="courses"><div class="wrap"><div class="eyebrow">Академия</div><h2 class="title">TOP-LEVEL COSMETOLOGY</h2><p class="sub">Флагманская программа «МЕЖДУ МИРОВ» для косметологов, которые хотят систематизировать знания, усилить практику и перейти на новый профессиональный уровень.</p><div class="flagship"><div class="flagshipVisual"><div class="flagshipLabel">FLAGSHIP PROGRAM</div><div class="flagshipTitle">TOP-LEVEL<br><em>COSMETOLOGY</em></div><div class="flagshipGlow"></div></div><div class="flagshipContent"><div class="eyebrow">МЕЖДУ МИРОВ · ТОП-УРОВЕНЬ</div><h3>Комплексная программа для роста косметолога.</h3><p>Не только процедуры. Мы собираем в одной системе профессиональную базу, практическое мышление, работу с клиентом, визуальную подачу и развитие личного бренда.</p><div class="flagshipGrid"><div><b>01</b><span>Профессиональная база</span></div><div><b>02</b><span>Практические протоколы</span></div><div><b>03</b><span>Продвижение и портфолио</span></div><div><b>04</b><span>Профессиональный рост</span></div></div><a class="btn" href="#method">Смотреть программу</a></div></div><div class="goldline"></div><div class="eyebrow">Будущие направления</div><p class="sub">Выберите программу и откройте доступ к следующему уровню профессионального развития.</p><div class="courses">
 <article class="course"><div><div class="hot">START · 6 МОДУЛЕЙ</div><h3>База косметологии</h3><p>Фундаментальная программа для начинающих и специалистов: основы косметологии, анатомическая логика, диагностика кожи, профессиональные протоколы и безопасная организация работы.</p><div class="courseDetails"><b>Что внутри</b><span>Анатомия · кожа · диагностика · протоколы · безопасность</span><b>Для кого</b><span>Начинающие и специалисты, систематизирующие базу</span><b>Результат</b><span>Понимание логики работы и уверенная профессиональная база</span></div></div><div class="price">от 19 900 ₽</div></article>
 <article class="course"><div><div class="hot">PROFESSIONAL · 7 МОДУЛЕЙ</div><h3>Контурная пластика</h3><p>Системный разбор контурной пластики: анатомия и зоны коррекции, принципы выбора тактики, работа с пропорциями лица и построение последовательного профессионального протокола.</p><div class="courseDetails"><b>Что внутри</b><span>Анатомия лица · зоны коррекции · пропорции · тактика · протоколы</span><b>Для кого</b><span>Практикующие специалисты с базовой подготовкой</span><b>Результат</b><span>Системный подход к планированию коррекции и работе с пациентом</span></div></div><div class="price">29 900 ₽</div></article>
 <article class="course"><div><div class="hot">ADVANCED · 8 МОДУЛЕЙ</div><h3>Комбинированное омоложение</h3><p>Комплексный подход к возрастным изменениям: оценка состояния кожи и тканей, сочетание современных методик, логика построения программ омоложения и работа на гармоничный, естественный результат.</p><div class="courseDetails"><b>Что внутри</b><span>Оценка тканей · anti-age стратегия · сочетание методик · протоколы</span><b>Для кого</b><span>Специалисты, работающие с комплексными запросами</span><b>Результат</b><span>Умение выстраивать последовательную программу омоложения</span></div></div><div class="price">34 900 ₽</div></article>
@@ -821,7 +854,8 @@ window.__openAcademyAuth=function(admin){
  }
  function save(v){localStorage.setItem(KEY,JSON.stringify(v));apply(v)}
  function makePanel(){
-  const path=location.pathname.replace(/\\/+$/,''); const ownerRoute=new URLSearchParams(location.search).get('owner')==='1'||path==='/owner'||path==='/admin'; if(!ownerRoute)return;\n  const panel=document.getElementById('adminPanel'); if(!panel||document.getElementById('visualControlCard'))return;
+  const path=location.pathname.replace(/\\/+$/,''); const ownerRoute=new URLSearchParams(location.search).get('owner')==='1'||path==='/owner'||path==='/admin'; if(!ownerRoute)return;
+  const panel=document.getElementById('adminPanel'); if(!panel||document.getElementById('visualControlCard'))return;
   const card=document.createElement('aside');card.id='visualControlCard';card.className='adminTools mmVisualDrawer';card.setAttribute('aria-label','Визуальный редактор сайта');
   const toggle=document.createElement('button');toggle.type='button';toggle.id='mmVisualDrawerToggle';toggle.className='mmVisualDrawerToggle';toggle.setAttribute('aria-expanded','false');toggle.innerHTML='<span class="mmDrawerIcon">⚙</span><span>Дизайн сайта</span><span class="mmDrawerChevron">‹</span>';toggle.setAttribute('aria-label','Открыть панель дизайна');
   const drawerStyle=document.createElement('style');drawerStyle.id='mmVisualDrawerStyles';drawerStyle.textContent=`
@@ -861,6 +895,53 @@ window.__openAcademyAuth=function(admin){
  function init(){makePanel();if(!document.getElementById('visualControlCard'))setTimeout(makePanel,1000)}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
  new MutationObserver(()=>{if(document.getElementById('adminPanel')&&!document.getElementById('visualControlCard'))makePanel()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+
+<script id="mmPolishInteractions">
+(function(){
+ function init(){
+  if(document.getElementById('courses')&&!document.querySelector('.mmCourseFilters')){
+   const section=document.getElementById('courses');
+   const list=section.querySelector('.courses');
+   if(list){
+    const filters=document.createElement('div');filters.className='mmCourseFilters';filters.setAttribute('aria-label','Фильтр программ');
+    const options=[['all','Все программы'],['start','Для начинающих'],['professional','Профессиональный уровень'],['advanced','Продвинутый уровень']];
+    options.forEach(function(opt,index){
+     const b=document.createElement('button');b.type='button';b.className='mmCourseFilter';b.textContent=opt[1];b.dataset.filter=opt[0];b.setAttribute('aria-pressed',index===0?'true':'false');filters.appendChild(b);
+    });
+    const count=document.createElement('span');count.className='mmFilterCount';count.setAttribute('aria-live','polite');filters.appendChild(count);
+    list.parentNode.insertBefore(filters,list);
+    function applyFilter(value){
+     let visible=0;
+     Array.from(list.querySelectorAll('.course')).forEach(function(card){
+      const label=(card.querySelector('.hot')?.textContent||'').toLowerCase();
+      const match=value==='all'||(value==='start'&&label.includes('start'))||(value==='professional'&&label.includes('professional'))||(value==='advanced'&&(label.includes('advanced')||label.includes('master')));
+      card.hidden=!match;if(match)visible++;
+     });
+     filters.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.filter===value))});
+     count.textContent='Показано программ: '+visible;
+    }
+    filters.addEventListener('click',function(e){const b=e.target.closest('button[data-filter]');if(b)applyFilter(b.dataset.filter)});
+    applyFilter('all');
+   }
+  }
+  document.querySelectorAll('#faq .q').forEach(function(q,index){
+   const heading=q.querySelector('b'),answer=q.querySelector('p');if(!heading||!answer||heading.dataset.mmFaqReady)return;
+   heading.dataset.mmFaqReady='1';heading.setAttribute('role','button');heading.setAttribute('tabindex','0');heading.setAttribute('aria-expanded',index===0?'true':'false');
+   q.classList.toggle('mmFaqOpen',index===0);answer.hidden=index!==0;
+   function toggle(){const open=q.classList.toggle('mmFaqOpen');answer.hidden=!open;heading.setAttribute('aria-expanded',String(open))}
+   heading.addEventListener('click',toggle);heading.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle()}});
+  });
+  if(!document.querySelector('.mmScrollProgress')){
+   const progress=document.createElement('div');progress.className='mmScrollProgress';progress.setAttribute('aria-hidden','true');document.body.appendChild(progress);
+   const top=document.createElement('button');top.type='button';top.className='mmBackTop';top.textContent='↑';top.setAttribute('aria-label','Наверх');top.title='Наверх';top.addEventListener('click',function(){window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})});document.body.appendChild(top);
+   function update(){const max=document.documentElement.scrollHeight-window.innerHeight;progress.style.width=(max>0?Math.min(100,window.scrollY/max*100):0)+'%';top.classList.toggle('mmVisible',window.scrollY>500)}
+   window.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);update();
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
 
