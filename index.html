@@ -425,11 +425,18 @@ function openAuth(next='login',admin=false){
   modal.classList.add('show');
 }
 function closeAuth(){modal.classList.remove('show')}
+async function enterStudentPage(user){
+  closeAuth();
+  const path=location.pathname.split('/').filter(Boolean).join('/');
+  if(path!=='student'){ location.assign('/student'); return; }
+  if(user) await loadCabinet(user);
+  document.getElementById('cabinetPanel')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
 function esc(v){return String(v??'').replace(/[&<>"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}
 
 accountBtn.onclick=async()=>{
   const {data:{user}}=await supabase.auth.getUser();
-  if(user){document.getElementById('cabinet').scrollIntoView({behavior:'smooth'});loadCabinet(user);}
+  if(user){await enterStudentPage(user);}
   else openAuth('login');
 };
 document.getElementById('authClose').onclick=closeAuth;
@@ -462,8 +469,7 @@ form.onsubmit=async(e)=>{
       const {data,error}=await supabase.auth.verifyOtp({phone:otpPendingPhone,token,type:'sms'});
       if(error) throw error;
       if(!data.user) throw new Error('Подтверждение прошло, но аккаунт не найден. Попробуйте войти.');
-      closeAuth();form.reset();await loadCabinet(data.user);
-      document.getElementById('cabinetPanel')?.scrollIntoView({behavior:'smooth',block:'start'});
+      form.reset();await enterStudentPage(data.user);
       return;
     }
     if(mode==='signup'){
@@ -479,8 +485,7 @@ form.onsubmit=async(e)=>{
         });
         if(error) throw error;
         if(data.session&&data.user){
-          closeAuth();form.reset();await loadCabinet(data.user);
-          document.getElementById('cabinetPanel')?.scrollIntoView({behavior:'smooth',block:'start'});
+          form.reset();await enterStudentPage(data.user);
         }else{
           otpPendingPhone=phone;
           mode='verifyOtp';
@@ -498,7 +503,7 @@ form.onsubmit=async(e)=>{
           options:{data:{full_name:nameInput.value.trim(),email:identifier}}
         });
         if(error) throw error;
-        if(data.session&&data.user){closeAuth();await loadCabinet(data.user);document.getElementById('cabinet').scrollIntoView({behavior:'smooth'});}
+        if(data.session&&data.user){await enterStudentPage(data.user);}
         else msg.textContent='Аккаунт создан. Подтвердите email по ссылке из письма, затем войдите в кабинет ученика.';
         form.reset();
       }
@@ -525,9 +530,7 @@ form.onsubmit=async(e)=>{
         closeAuth();
         await loadAdmin(data.user);
       }else{
-        closeAuth(); await loadCabinet(data.user);
-        const cabinetPanel=document.getElementById('cabinetPanel');
-        if(cabinetPanel){cabinetPanel.scrollIntoView({behavior:'smooth',block:'start'});}
+        await enterStudentPage(data.user);
       }
     }
   }catch(err){msg.textContent=err.message||'Не удалось выполнить операцию.'}
@@ -813,7 +816,13 @@ supabase.auth.onAuthStateChange((event,session)=>{
   }
   if(session){
     const {data:profile}=await supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
-    if(profile?.role!=='admin') await loadCabinet(session.user);
+    if(profile?.role!=='admin'){
+      const path=location.pathname.split('/').filter(Boolean).join('/');
+      const isStudentRoute=new URLSearchParams(location.search).get('student')==='1'||path==='student';
+      const isOwnerRoute=new URLSearchParams(location.search).get('owner')==='1'||path==='owner'||path==='admin';
+      if(!isStudentRoute&&!isOwnerRoute&&new URLSearchParams(location.search).get('reset')!=='1'){location.replace('/student');return;}
+      await loadCabinet(session.user);
+    }
   }
 })();
 
