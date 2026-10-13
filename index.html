@@ -342,9 +342,9 @@ footer{gap:18px;flex-wrap:wrap}
 .lessonCategory{display:inline-flex;align-self:flex-start;max-width:100%;padding:7px 11px;border:1px solid rgba(164,132,80,.28);border-radius:999px;background:#f0e7d7;color:#76603d;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
 .lessonCardHeading{display:flex;align-items:center;justify-content:space-between;gap:10px}.lessonDuration{font-size:12px;color:#777166}
 .lessonCard h4{margin:0!important;font-size:clamp(18px,2vw,22px)!important;line-height:1.3!important;color:#292721}
-.lessonDescription{white-space:pre-line;line-height:1.65!important;color:#655f55!important;font-size:13px!important;margin:0!important}
+.lessonDescription{white-space:pre-line;line-height:1.65!important;color:#655f55!important;font-size:13px!important;margin:0!important}.lessonProgressAction{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:4px;padding-top:14px;border-top:1px solid rgba(164,132,80,.18)}.lessonDoneBtn{border:1px solid #b69a63;background:#292722;color:#fffaf0;border-radius:999px;padding:10px 15px;font:600 11px Arial,sans-serif;letter-spacing:.04em;cursor:pointer;transition:background .2s,transform .2s}.lessonDoneBtn:hover{background:#80643b;transform:translateY(-1px)}.lessonDoneBtn.isDone{background:#edf2e8;color:#45603d;border-color:#cad8bf}.lessonProgressHint{font-size:11px;color:#827969;line-height:1.4}
 .lessonPlayer{width:100%;margin-top:4px;overflow:hidden;border-radius:14px;background:#171513;aspect-ratio:16/9}.lessonPlayer iframe,.lessonPlayer video{display:block;width:100%;height:100%;border:0;object-fit:contain}.lessonPlayerPortrait{aspect-ratio:9/16;max-height:460px;width:min(100%,320px);margin-inline:auto}
-@media(max-width:640px){.lessonCard{padding:16px!important}.lessonPlayerPortrait{max-height:420px}}
+@media(max-width:640px){.lessonCard{padding:16px!important}.lessonPlayerPortrait{max-height:420px}.lessonProgressAction{align-items:flex-start}.lessonDoneBtn{width:100%;padding:12px}}
 </style>
 </head>
 <body><div class="screenSparkles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -962,9 +962,16 @@ async function loadCabinet(user){
 }
 async function openStudentCourse(courseId){
  const host=document.getElementById('cabinetCards'); if(!host)return;
- const {data:lessons,error}=await supabase.from('lessons').select('id,title,description,video_url,duration_minutes,position,published').eq('course_id',courseId).eq('published',true).order('position');
+ const {data:{user}}=await supabase.auth.getUser(); if(!user){host.innerHTML='<div class="adminNotice">Войдите в кабинет, чтобы продолжить обучение.</div>';return;}
+ const {data:enrollment}=await supabase.from('enrollments').select('id').eq('user_id',user.id).eq('course_id',courseId).eq('status','active').maybeSingle();
+ if(!enrollment){host.innerHTML='<div class="emptyCourse"><h4>Нет активного доступа к курсу</h4><p>Этот курс доступен после подтверждения доступа владельцем академии.</p><button class="miniBtn" id="backToCourses">← Все мои курсы</button></div>';document.getElementById('backToCourses').onclick=async()=>loadCabinet((await supabase.auth.getUser()).data.user);return;}
+ const [{data:lessons,error},{data:progressRows}]=await Promise.all([
+   supabase.from('lessons').select('id,title,description,video_url,duration_minutes,position,published').eq('course_id',courseId).eq('published',true).order('position'),
+   supabase.from('lesson_progress').select('lesson_id,completed').eq('user_id',user.id)
+ ]);
  if(error){host.innerHTML='<div class="adminNotice">Не удалось загрузить уроки.</div>';return}
  if(!lessons?.length){host.innerHTML='<div class="emptyCourse"><h4>Уроки ещё не опубликованы</h4><p>Владелец академии добавит видео в этот раздел.</p></div>';return}
+ const completedIds=new Set((progressRows||[]).filter(p=>p.completed).map(p=>p.lesson_id));
  const cards=[];
  for(const l of lessons){
    let src='';
@@ -972,11 +979,24 @@ async function openStudentCourse(courseId){
      if(l.video_url.startsWith('http')) src=l.video_url;
      else {const s=await supabase.storage.from('academy-videos').createSignedUrl(l.video_url,3600);src=s.data?.signedUrl||''}
    }
-   const descLines=(l.description||'').replaceAll(String.fromCharCode(92)+'n',String.fromCharCode(10)).split(String.fromCharCode(10));const segmentLabel=(descLines.shift()||'УРОК КУРСА').replace(/^РАЗДЕЛ:\\s*/,'');const descText=descLines.join('\\n');let player=''; if(src){if(src.startsWith('yt:')){const vid=src.slice(3);player='<div class="lessonPlayer"><iframe title="'+esc(l.title)+'" src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(vid)+'?rel=0&playsinline=1" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>';}else if(src.includes('tiktok.com/embed/')){player='<div class="lessonPlayer lessonPlayerPortrait"><iframe title="'+esc(l.title)+'" src="'+esc(src)+'" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>';}else{player='<div class="lessonPlayer"><video controls playsinline preload="metadata" src="'+esc(src)+'"></video></div>';}} cards.push('<article class="cabCard lessonCard"><span class="lessonCategory">'+esc(segmentLabel)+'</span><div class="lessonCardHeading"><span class="num">УРОК '+String(l.position||0).padStart(2,'0')+'</span><span class="lessonDuration">'+esc(l.duration_minutes||'—')+' мин</span></div><h4>'+esc(l.title)+'</h4><p class="lessonDescription">'+esc(descText||'Учебный материал курса.')+'</p>'+(player||'<div class="adminNotice">Видео пока не загружено.</div>')+'</article>');
+   const descLines=(l.description||'').replaceAll(String.fromCharCode(92)+'n',String.fromCharCode(10)).split(String.fromCharCode(10));const segmentLabel=(descLines.shift()||'УРОК КУРСА').replace(/^РАЗДЕЛ:\\s*/,'');const descText=descLines.join('\n');let player=''; if(src){if(src.startsWith('yt:')){const vid=src.slice(3);player='<div class="lessonPlayer"><iframe title="'+esc(l.title)+'" src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(vid)+'?rel=0&playsinline=1" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>';}else if(src.includes('tiktok.com/embed/')){player='<div class="lessonPlayer lessonPlayerPortrait"><iframe title="'+esc(l.title)+'" src="'+esc(src)+'" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>';}else{player='<div class="lessonPlayer"><video controls playsinline preload="metadata" src="'+esc(src)+'"></video></div>';}} cards.push('<article class="cabCard lessonCard"><span class="lessonCategory">'+esc(segmentLabel)+'</span><div class="lessonCardHeading"><span class="num">УРОК '+String(l.position||0).padStart(2,'0')+'</span><span class="lessonDuration">'+esc(l.duration_minutes||'—')+' мин</span></div><h4>'+esc(l.title)+'</h4><p class="lessonDescription">'+esc(descText||'Учебный материал курса.')+'</p>'+(player||'<div class="adminNotice">Видео пока не загружено.</div>')+'<div class="lessonProgressAction"><button type="button" class="lessonDoneBtn '+(completedIds.has(l.id)?'isDone':'')+'" data-mark-lesson="'+l.id+'" aria-pressed="'+(completedIds.has(l.id)?'true':'false')+'">'+(completedIds.has(l.id)?'✓ Урок пройден':'Отметить как пройденный')+'</button><span class="lessonProgressHint">'+(completedIds.has(l.id)?'Прогресс сохранён в вашем кабинете':'Отметьте урок после просмотра, чтобы сохранить прогресс')+'</span></div>'+'</article>');
  }
- host.innerHTML='<div style="grid-column:1/-1"><button class="miniBtn" id="backToCourses">← Все мои курсы</button></div>'+cards.join('');
+ host.innerHTML='<div style="grid-column:1/-1"><button class="miniBtn" id="backToCourses">← Все мои курсы</button><div class="adminNotice" style="margin-top:10px">Отмечайте уроки после просмотра — прогресс будет сохранён в личном кабинете.</div></div>'+cards.join('');
  document.getElementById('backToCourses').onclick=async()=>loadCabinet((await supabase.auth.getUser()).data.user);
+ host.querySelectorAll('[data-mark-lesson]').forEach(btn=>btn.onclick=async()=>{if(btn.dataset.saving==='1')return;btn.dataset.saving='1';btn.disabled=true;btn.textContent='Сохраняю…';const lessonId=btn.dataset.markLesson;const lesson=lessons.find(x=>x.id===lessonId);const result=await supabase.from('lesson_progress').upsert({user_id:user.id,lesson_id:lessonId,completed:true,progress_seconds:Math.max(0,Number(lesson?.duration_minutes||0)*60),updated_at:new Date().toISOString()},{onConflict:'user_id,lesson_id'});if(result.error){btn.textContent='Не удалось сохранить — повторить';btn.disabled=false;btn.dataset.saving='0';btn.title=result.error.message;return;}btn.classList.add('isDone');btn.setAttribute('aria-pressed','true');btn.textContent='✓ Урок пройден';const hint=btn.parentElement.querySelector('.lessonProgressHint');if(hint)hint.textContent='Прогресс сохранён в вашем кабинете';btn.dataset.saving='0';btn.disabled=false;completedIds.add(lessonId);await refreshStudentProgress(user.id);});
 }
+async function refreshStudentProgress(userId){
+ const [{data:enrollments},{data:progressRows}]=await Promise.all([
+   supabase.from('enrollments').select('course_id').eq('user_id',userId).eq('status','active'),
+   supabase.from('lesson_progress').select('lesson_id').eq('user_id',userId).eq('completed',true)
+ ]);
+ const courseIds=[...new Set((enrollments||[]).map(e=>e.course_id))];
+ if(!courseIds.length){document.getElementById('studentProgress').textContent='0%';return;}
+ const {data:lessons}=await supabase.from('lessons').select('id').in('course_id',courseIds).eq('published',true);
+ const all=lessons||[],done=new Set((progressRows||[]).map(p=>p.lesson_id));
+ document.getElementById('studentProgress').textContent=(all.length?Math.round(all.filter(l=>done.has(l.id)).length/all.length*100):0)+'%';
+}
+
 async function loadMasterCertificate(user){
  const host=document.getElementById('masterCertificateMount'); if(!host||!user)return;
  const {data:cert}=await supabase.from('master_certificates').select('certificate_number,level,title,issued_at,visible').eq('user_id',user.id).maybeSingle();
