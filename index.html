@@ -291,7 +291,7 @@ footer{gap:18px;flex-wrap:wrap}
 .videoLibraryGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 .videoLibraryCard{overflow:hidden;background:#fffdfa;border:1px solid #e6dccb;border-radius:16px;box-shadow:0 8px 28px rgba(63,48,27,.055);min-width:0}
 .videoLibraryMedia{aspect-ratio:16/9;background:#181612;overflow:hidden}
-.videoLibraryMedia iframe{display:block;width:100%;height:100%;border:0}
+.videoLibraryMedia iframe,.videoLibraryMedia video{display:block;width:100%;height:100%;border:0}.videoLibraryMedia video{object-fit:cover;background:#181612}
 .videoLibraryCard.glassVideo .videoLibraryMedia{aspect-ratio:9/16;max-height:380px}
 .videoLibraryCard.glassVideo .videoLibraryMedia iframe{max-width:100%;margin:auto}
 .videoLibraryBody{padding:19px}
@@ -336,7 +336,7 @@ footer{gap:18px;flex-wrap:wrap}
 }
 </style>
 
-<style id="hidePublicVideoLibrary">#openVideoLibrary{display:none!important}</style>
+<style id="showPublicVideoLibrary">#openVideoLibrary{display:block!important;scroll-margin-top:90px}</style>
 <style id="polishedLessonCards">
 .lessonCard{display:flex;flex-direction:column;gap:12px;padding:clamp(18px,3vw,28px)!important;border:1px solid rgba(164,132,80,.22)!important;border-radius:20px!important;background:linear-gradient(155deg,#fffdf9 0%,#f8f4ec 100%)!important;box-shadow:0 12px 34px rgba(44,35,24,.055)}
 .lessonCategory{display:inline-flex;align-self:flex-start;max-width:100%;padding:7px 11px;border:1px solid rgba(164,132,80,.28);border-radius:999px;background:#f0e7d7;color:#76603d;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
@@ -438,7 +438,20 @@ footer{gap:18px;flex-wrap:wrap}
       </article></div>
       </section>
     </div>
-    <p class="videoLibraryNote">Каждая карточка имеет номер, короткое превью, пояснение «что это» и «для чего». Нажмите на обложку, чтобы попробовать просмотр на странице. Это внешние ознакомительные материалы авторов, не авторские платные уроки академии. Доступность встроенного воспроизведения зависит от исходной платформы.</p>
+    <section class="videoSubgroup" aria-labelledby="videoSubgroupTitle5">
+        <div class="videoSubgroupHead"><span class="videoSubgroupNumber">05</span><div><h3 id="videoSubgroupTitle5">Строение кожи и фотозащита</h3><p>Дополнительные материалы по слоям кожи и воздействию ультрафиолета.</p></div></div>
+        <div class="videoLibraryGrid">
+          <article class="videoLibraryCard">
+            <div class="videoLibraryMedia"><video controls playsinline preload="none" aria-label="Строение кожи: три слоя"><source src="https://medlineplus.gov/ency/videos/mov/200098_eng.mp4" type="video/mp4">Ваш браузер не поддерживает воспроизведение видео. <a href="https://medlineplus.gov/ency/anatomyvideos/000029.htm" target="_blank" rel="noopener">Открыть источник</a>.</video></div>
+            <div class="videoLibraryBody"><span class="videoLibraryTag">06 · АНАТОМИЯ КОЖИ</span><h3>Строение кожи: три слоя</h3><p>Краткая анимация об эпидермисе, дерме и подкожной клетчатке. Дополнительный материал для изучения основ кожи.</p><div class="videoLibraryMeta"><a class="videoLibraryLink" href="https://medlineplus.gov/ency/anatomyvideos/000029.htm" target="_blank" rel="noopener">Источник: MedlinePlus</a><span class="videoLibrarySource">Внешний учебный материал · English</span></div></div>
+          </article>
+          <article class="videoLibraryCard">
+            <div class="videoLibraryMedia"><video controls playsinline preload="none" aria-label="Солнце и кожа"><source src="https://medlineplus.gov/ency/videos/mov/200100_eng.mp4" type="video/mp4">Ваш браузер не поддерживает воспроизведение видео. <a href="https://medlineplus.gov/ency/anatomyvideos/000125.htm" target="_blank" rel="noopener">Открыть источник</a>.</video></div>
+            <div class="videoLibraryBody"><span class="videoLibraryTag">07 · ФОТОЗАЩИТА</span><h3>Солнце и кожа</h3><p>Объяснение того, как ультрафиолет влияет на кожу и почему важна защита от чрезмерного солнечного воздействия.</p><div class="videoLibraryMeta"><a class="videoLibraryLink" href="https://medlineplus.gov/ency/anatomyvideos/000125.htm" target="_blank" rel="noopener">Источник: MedlinePlus</a><span class="videoLibrarySource">Внешний учебный материал · English</span></div></div>
+          </article>
+        </div>
+      </section>
+      <p class="videoLibraryNote">Каждая карточка имеет номер, короткое превью, пояснение «что это» и «для чего». Нажмите на обложку, чтобы попробовать просмотр на странице. Это внешние ознакомительные материалы авторов, не авторские платные уроки академии. Доступность встроенного воспроизведения зависит от исходной платформы.</p>
   </div>
 </section>
 <style id="videoSubgroupStyles">
