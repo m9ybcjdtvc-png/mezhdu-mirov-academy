@@ -724,9 +724,13 @@ form.onsubmit=async(e)=>{
           options:{data:{full_name:nameInput.value.trim(),email:identifier}}
         });
         if(error) throw error;
-        if(data.session&&data.user){await enterStudentPage(data.user);}
-        else msg.textContent='Аккаунт создан. Подтвердите email по ссылке из письма, затем войдите в кабинет ученика.';
-        form.reset();
+        if(data.session&&data.user){form.reset();await enterStudentPage(data.user);}
+        else {
+          passwordInput.value='';
+          msg.textContent='Аккаунт создан. Проверьте почту и подтвердите адрес по ссылке из письма. После подтверждения вернитесь сюда, нажмите «Уже есть аккаунт» и войдите — откроется ваш личный кабинет. Если письма нет, проверьте папку «Спам». Email сохранён в форме.';
+          switchBtn.textContent='Уже подтвердил email — войти';
+          switchBtn.style.display='inline-block';
+        }
       }
     }else{
       const identifier=emailInput.value.trim();
@@ -1097,7 +1101,7 @@ courseBuy.onclick=async()=>{const code=courseBuy.dataset.course;const d=courseDa
  courseBuy.disabled=true; courseBuy.textContent='Создаём заказ…';
  const {data:order,error}=await supabase.rpc('create_payment_order',{p_course_id:courseId});
  courseBuy.disabled=false; courseBuy.textContent='Начать обучение';
- if(error){msg.textContent=error.message==='ALREADY_ENROLLED'?'У вас уже есть доступ к этому курсу.':'Не удалось создать заказ. Попробуйте ещё раз.';return}
+ if(error){const e=String(error.message||'');msg.textContent=e.includes('ALREADY_ENROLLED')?'У вас уже есть доступ к этому курсу.':e.includes('COURSE_PRICE_NOT_SET')?'Продажа этого курса временно недоступна: цена ещё не установлена.':e.includes('COURSE_CONTENT_NOT_READY')?'Курс ещё готовится: уроки пока не опубликованы.':e.includes('AUTH_REQUIRED')?'Войдите в аккаунт, чтобы оформить заказ.':'Не удалось создать заказ. Попробуйте ещё раз.';return}
  courseModal.classList.remove('show');
  const cabinet=document.getElementById('cabinetPanel'); if(cabinet){cabinet.classList.add('show');}
  accountBtn.textContent='Кабинет';
