@@ -1504,5 +1504,44 @@ html,body{max-width:100%;overflow-x:clip}
  footer{display:block!important;padding:26px 18px!important;line-height:1.8}
 }
 </style>
+
+<script id="mmPaymentsTabRecovery">
+(function(){
+  function activatePayments(){
+    var panel=document.getElementById('adminTab-payments');
+    if(!panel)return;
+    document.querySelectorAll('.ownerTab').forEach(function(el){el.classList.remove('active');});
+    document.querySelectorAll('.adminSideBtn').forEach(function(el){el.classList.toggle('active',el.dataset.tab==='payments');});
+    panel.classList.add('active');
+    panel.style.display='block';
+    panel.style.visibility='visible';
+    panel.style.minHeight='260px';
+    var head=panel.querySelector('.adminSectionHead');
+    if(head && !panel.querySelector('.mmPaymentRecoveryNotice')){
+      var notice=document.createElement('div');
+      notice.className='adminNotice mmPaymentRecoveryNotice';
+      notice.textContent='Раздел оплаты открыт. Если данные не загрузятся, ниже появится сообщение об ошибке.';
+      panel.insertBefore(notice,panel.firstChild);
+    }
+    try{
+      if(typeof renderAdminPayments==='function'){
+        Promise.resolve(renderAdminPayments()).catch(function(err){
+          var n=panel.querySelector('.mmPaymentRecoveryNotice');
+          if(n)n.textContent='Не удалось загрузить раздел оплат: '+(err&&err.message?err.message:'неизвестная ошибка');
+        });
+      }
+    }catch(err){
+      var n=panel.querySelector('.mmPaymentRecoveryNotice');
+      if(n)n.textContent='Ошибка раздела оплат: '+(err&&err.message?err.message:'неизвестная ошибка');
+    }
+  }
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest('.adminSideBtn[data-tab="payments"]');
+    if(!btn)return;
+    setTimeout(activatePayments,0);
+  },true);
+})();
+</script>
+
 </body>
 </html>
