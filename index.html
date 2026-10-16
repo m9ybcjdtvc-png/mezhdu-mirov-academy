@@ -682,7 +682,7 @@ input:not([type=checkbox]):not([type=radio]),select,textarea{min-height:44px}
 </div></section></main>
 <footer class="wrap"><span>© МЕЖДУ МИРОВ · Онлайн-академия косметологии</span><span>Россия · ₽</span></footer>
 
-<div class="courseModal" id="courseModal" aria-hidden="true"><div class="courseModalBox"><div class="courseModalTop"><div><div class="eyebrow" id="courseModalKicker">ПРОГРАММА</div><h3 id="courseModalTitle"></h3><p class="courseModalLead" id="courseModalLead"></p></div><button class="courseClose" id="courseClose">Закрыть</button></div><div class="courseModalGrid" id="courseModalGrid"></div><div class="courseModalActions"><strong class="courseModalPrice" id="courseModalPrice"></strong><button class="btn" id="courseBuy">Начать обучение</button></div></div></div><div class="modal" id="authModal" aria-hidden="true">
+<div class="courseModal" id="courseModal" aria-hidden="true"><div class="courseModalBox"><div class="courseModalTop"><div><div class="eyebrow" id="courseModalKicker">ПРОГРАММА</div><h3 id="courseModalTitle"></h3><p class="courseModalLead" id="courseModalLead"></p></div><button class="courseClose" id="courseClose">Закрыть</button></div><div class="courseModalGrid" id="courseModalGrid"></div><div id="courseCheckoutMsg" role="status" aria-live="polite" style="display:none;margin:14px 0;padding:12px 14px;border:1px solid #e5d8bd;border-radius:12px;background:#fffdf8;color:#514635;font-size:14px;line-height:1.5"></div><div class="courseModalActions"><strong class="courseModalPrice" id="courseModalPrice"></strong><button class="btn" id="courseBuy">Начать обучение</button></div></div></div><div class="modal" id="authModal" aria-hidden="true">
   <div class="modalBox">
     <div class="eyebrow" id="authEyebrow">МЕЖДУ МИРОВ · ВХОД УЧЕНИКА</div>
     <h3 id="authTitle">Войти</h3>
@@ -765,6 +765,8 @@ function openAuth(next='login',admin=false){
 function closeAuth(){modal.classList.remove('show')}
 async function enterStudentPage(user){
   closeAuth();
+  const pendingCheckout=sessionStorage.getItem('pendingCourseCheckout');
+  if(pendingCheckout){location.assign('/?checkout='+encodeURIComponent(pendingCheckout));return;}
   const path=location.pathname.split('/').filter(Boolean).join('/');
   if(path!=='student'){ location.assign('/student'); return; }
   if(user) await loadCabinet(user);
@@ -1255,18 +1257,20 @@ const courseModalLead=document.getElementById('courseModalLead');
 const courseModalGrid=document.getElementById('courseModalGrid');
 const courseModalPrice=document.getElementById('courseModalPrice');
 const courseBuy=document.getElementById('courseBuy');
+const courseCheckoutMsg=document.getElementById('courseCheckoutMsg');
+function showCourseCheckoutMessage(text){if(!courseCheckoutMsg)return;courseCheckoutMsg.textContent=text;courseCheckoutMsg.style.display='block';}
 const courseData={
  START:{title:'База косметологии',kicker:'START · 6 МОДУЛЕЙ',lead:'Фундаментальная программа для системного входа в профессию и уверенной работы с базовыми косметологическими задачами.',price:'от 19 900 ₽',items:[['Для кого','Начинающие специалисты и косметологи, систематизирующие базу'],['Внутри','Анатомия · кожа · диагностика · протоколы · безопасность'],['Формат','Видеоуроки 15–30 минут · личный кабинет · материалы'],['Результат','Цельная профессиональная база и понимание логики работы']]},
  PROFESSIONAL:{title:'Контурная пластика',kicker:'PROFESSIONAL · 7 МОДУЛЕЙ',lead:'Системная программа по планированию эстетической коррекции, анатомической логике и построению последовательного профессионального протокола.',price:'29 900 ₽',items:[['Для кого','Практикующие специалисты с соответствующей подготовкой'],['Внутри','Анатомия лица · пропорции · зоны коррекции · тактика'],['Формат','Видеоуроки 15–30 минут · модули · личный кабинет'],['Результат','Системный подход к планированию коррекции и оценке результата']]},
  ADVANCED:{title:'Комбинированное омоложение',kicker:'ADVANCED · 8 МОДУЛЕЙ',lead:'Комплексная программа по работе с возрастными изменениями и построению персонализированной стратегии омоложения.',price:'34 900 ₽',items:[['Для кого','Специалисты, работающие с комплексными эстетическими запросами'],['Внутри','Оценка тканей · anti-age стратегия · сочетание методик'],['Формат','Видеоуроки 15–30 минут · модули · личный кабинет'],['Результат','Умение выстраивать последовательную программу омоложения']]},
  GLASS:{title:'Glass Skin',kicker:'ADVANCED · 6 МОДУЛЕЙ',lead:'Программа по качеству кожи, современным аппаратным и инъекционным подходам и построению персонального протокола.',price:'44 900 ₽',items:[['Для кого','Специалисты, развивающие программы качества кожи'],['Внутри','Качество кожи · современные методики · персональный протокол'],['Формат','Видеоуроки · модули · личный кабинет'],['Результат','Системное построение программ для качества кожи']]},
  BOTULINUM:{title:'Ботулинотерапия',kicker:'PROFESSIONAL · 6 МОДУЛЕЙ',lead:'Программа по анатомическим ориентирам, показаниям, ограничениям и логике построения профессионального протокола.',price:'29 900 ₽',items:[['Для кого','Квалифицированные специалисты с соответствующей подготовкой'],['Внутри','Анатомия · показания · ограничения · тактика коррекции'],['Формат','Видеоуроки · модули · личный кабинет'],['Результат','Системное понимание планирования процедуры']]}}
-function openCourse(code){const d=courseData[code];if(!d)return;courseModalKicker.textContent=d.kicker;courseModalTitle.textContent=d.title;courseModalLead.textContent=d.lead;courseModalPrice.textContent=d.price;courseModalGrid.innerHTML=d.items.map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('');courseBuy.dataset.course=code;courseModal.classList.add('show');courseModal.setAttribute('aria-hidden','false')}
+function openCourse(code){const d=courseData[code];if(!d)return;courseModalKicker.textContent=d.kicker;courseModalTitle.textContent=d.title;courseModalLead.textContent=d.lead;courseModalPrice.textContent=d.price;courseModalGrid.innerHTML=d.items.map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('');courseBuy.dataset.course=code;if(courseCheckoutMsg){courseCheckoutMsg.textContent='';courseCheckoutMsg.style.display='none'}courseModal.classList.add('show');courseModal.setAttribute('aria-hidden','false')}
 document.querySelectorAll('.courseInfoBtn').forEach(b=>b.addEventListener('click',()=>openCourse(b.dataset.course)));
 document.querySelectorAll('.coursePayBtn').forEach(b=>b.addEventListener('click',()=>openCourse(b.dataset.course)));
 courseClose.onclick=()=>courseModal.classList.remove('show');
 courseModal.addEventListener('click',e=>{if(e.target===courseModal)courseModal.classList.remove('show')});
-courseBuy.onclick=async()=>{const code=courseBuy.dataset.course;const d=courseData[code];const {data:{user}}=await supabase.auth.getUser();if(!user){courseModal.classList.remove('show');openAuth('login');return}
+courseBuy.onclick=async()=>{const code=courseBuy.dataset.course;const d=courseData[code];const {data:{user}}=await supabase.auth.getUser();if(!user){sessionStorage.setItem('pendingCourseCheckout',code);courseModal.classList.remove('show');courseModal.setAttribute('aria-hidden','true');openAuth('login');return}
  const courseIds={START:'e6ae8737-c39c-49cd-92fb-16628f75d932',PROFESSIONAL:'70e820e4-feb7-4009-aff8-82ed67a2adb5',ADVANCED:'420f4030-5fcf-478e-bdd5-fb35df9f243f',BOTULINUM:'0ef7c86c-b4d1-44ea-bdb3-64b4f93b9b46',GLASS:'fc274bf2-abcb-4cae-af1e-db5b65a33aa7',MASTER:'9ea937d8-513b-460c-a5a8-0dd8d9bebb1f'};
  const courseId=courseIds[code]; if(!courseId){msg.textContent='Курс пока не подключён к продаже.';return}
  courseBuy.disabled=true; courseBuy.textContent='Создаём заказ…';
@@ -1275,7 +1279,7 @@ courseBuy.onclick=async()=>{const code=courseBuy.dataset.course;const d=courseDa
   courseBuy.disabled=false; courseBuy.textContent='Записаться и оформить заказ';
   const error=orderResult?.error; const rawOrder=orderResult?.data;
   const order=Array.isArray(rawOrder)?rawOrder[0]:(rawOrder?.order||rawOrder?.data||rawOrder);
-  if(error||!order||!order.id){const e=String(error?.message||'');msg.textContent=e.includes('ALREADY_ENROLLED')?'У вас уже есть доступ к этому курсу.':e.includes('COURSE_PRICE_NOT_SET')?'Продажа этого курса временно недоступна: цена ещё не установлена.':e.includes('COURSE_CONTENT_NOT_READY')?'Курс ещё готовится: уроки пока не опубликованы.':e.includes('AUTH_REQUIRED')?'Войдите в аккаунт, чтобы оформить заказ.':('Не удалось создать заказ. '+(e||'Сервер не вернул номер заказа. Попробуйте ещё раз.'));return}
+  if(error||!order||!order.id){const e=String(error?.message||'');showCourseCheckoutMessage(e.includes('ALREADY_ENROLLED')?'У вас уже есть доступ к этому курсу.':e.includes('COURSE_PRICE_NOT_SET')?'Продажа этого курса временно недоступна: цена ещё не установлена.':e.includes('COURSE_CONTENT_NOT_READY')?'Курс ещё готовится: уроки пока не опубликованы.':e.includes('AUTH_REQUIRED')?'Войдите в аккаунт, чтобы оформить заказ.':('Не удалось создать заказ. '+(e||'Сервер не вернул номер заказа. Попробуйте ещё раз.')));return}
   courseModal.classList.remove('show');
   const cabinet=document.getElementById('cabinetPanel'); if(cabinet)cabinet.classList.add('show');
   accountBtn.textContent='Кабинет';
@@ -1293,6 +1297,13 @@ courseBuy.onclick=async()=>{const code=courseBuy.dataset.course;const d=courseDa
   if(history){const cards=history.querySelectorAll('.cabCard');const matching=[...cards].find(card=>card.textContent.includes(String(order.id).slice(0,8).toUpperCase()));if(matching){matching.id='newPaymentOrder';matching.scrollIntoView({behavior:'smooth',block:'center'});matching.style.outline='2px solid #b79b69';matching.style.outlineOffset='4px';}else history.scrollIntoView({behavior:'smooth',block:'start'});}
   window.setTimeout(()=>{const target=document.getElementById('newPaymentOrder')||document.getElementById('studentTab-orders');target?.scrollIntoView({behavior:'smooth',block:'start'});},120);
 };
+const pendingCheckoutCode=new URLSearchParams(location.search).get('checkout');
+if(pendingCheckoutCode&&courseData[pendingCheckoutCode]){
+  supabase.auth.getUser().then(({data:{user}})=>{
+    if(user){sessionStorage.removeItem('pendingCourseCheckout');openCourse(pendingCheckoutCode);courseBuy.click()}
+    else{openAuth('login')}
+  }).catch(()=>openAuth('login'));
+}
 </script>
 <div id="publicProfileMount"></div>
 
