@@ -1192,18 +1192,28 @@ courseBuy.onclick=async()=>{const code=courseBuy.dataset.course;const d=courseDa
  const courseIds={START:'e6ae8737-c39c-49cd-92fb-16628f75d932',PROFESSIONAL:'70e820e4-feb7-4009-aff8-82ed67a2adb5',ADVANCED:'420f4030-5fcf-478e-bdd5-fb35df9f243f',BOTULINUM:'0ef7c86c-b4d1-44ea-bdb3-64b4f93b9b46',GLASS:'fc274bf2-abcb-4cae-af1e-db5b65a33aa7',MASTER:'9ea937d8-513b-460c-a5a8-0dd8d9bebb1f'};
  const courseId=courseIds[code]; if(!courseId){msg.textContent='Курс пока не подключён к продаже.';return}
  courseBuy.disabled=true; courseBuy.textContent='Создаём заказ…';
- const {data:order,error}=await supabase.rpc('create_payment_order',{p_course_id:courseId});
- courseBuy.disabled=false; courseBuy.textContent='Начать обучение';
- if(error){const e=String(error.message||'');msg.textContent=e.includes('ALREADY_ENROLLED')?'У вас уже есть доступ к этому курсу.':e.includes('COURSE_PRICE_NOT_SET')?'Продажа этого курса временно недоступна: цена ещё не установлена.':e.includes('COURSE_CONTENT_NOT_READY')?'Курс ещё готовится: уроки пока не опубликованы.':e.includes('AUTH_REQUIRED')?'Войдите в аккаунт, чтобы оформить заказ.':'Не удалось создать заказ. Попробуйте ещё раз.';return}
- courseModal.classList.remove('show');
- const cabinet=document.getElementById('cabinetPanel'); if(cabinet){cabinet.classList.add('show');}
- accountBtn.textContent='Кабинет';
- const notice=document.getElementById('paymentNotice'); if(notice){notice.innerHTML='<b>Заказ создан ✓</b><br>Номер заказа: '+esc(order.id)+'<br>Сумма: '+Number(order.amount_rub||0).toLocaleString('ru-RU')+' ₽<br><span>Открываем реквизиты для перевода. После оплаты проверьте поступление в банке; доступ к курсу откроется после подтверждения владельцем.</span>';notice.style.display='block';}
- const {data:{user:currentUser}}=await supabase.auth.getUser(); if(currentUser) await loadCabinet(currentUser);
- if(typeof activateStudentTab==='function')activateStudentTab('orders');
- const history=document.getElementById('purchaseHistory');
- if(history){const cards=history.querySelectorAll('.cabCard');const matching=[...cards].find(card=>card.textContent.includes(String(order.id).slice(0,8).toUpperCase()));if(matching){matching.id='newPaymentOrder';matching.scrollIntoView({behavior:'smooth',block:'center'});matching.style.outline='2px solid #b79b69';matching.style.outlineOffset='4px';}else history.scrollIntoView({behavior:'smooth',block:'start'});}
- window.setTimeout(()=>{const target=document.getElementById('newPaymentOrder')||document.getElementById('studentTab-orders');target?.scrollIntoView({behavior:'smooth',block:'start'});},120);
+ let orderResult;
+  try{orderResult=await supabase.rpc('create_payment_order',{p_course_id:courseId});}catch(err){orderResult={data:null,error:err};}
+  courseBuy.disabled=false; courseBuy.textContent='Начать обучение';
+  const error=orderResult?.error; const rawOrder=orderResult?.data;
+  const order=Array.isArray(rawOrder)?rawOrder[0]:(rawOrder?.order||rawOrder?.data||rawOrder);
+  if(error||!order||!order.id){const e=String(error?.message||'');msg.textContent=e.includes('ALREADY_ENROLLED')?'У вас уже есть доступ к этому курсу.':e.includes('COURSE_PRICE_NOT_SET')?'Продажа этого курса временно недоступна: цена ещё не установлена.':e.includes('COURSE_CONTENT_NOT_READY')?'Курс ещё готовится: уроки пока не опубликованы.':e.includes('AUTH_REQUIRED')?'Войдите в аккаунт, чтобы оформить заказ.':('Не удалось создать заказ. '+(e||'Сервер не вернул номер заказа. Попробуйте ещё раз.'));return}
+  courseModal.classList.remove('show');
+  const cabinet=document.getElementById('cabinetPanel'); if(cabinet)cabinet.classList.add('show');
+  accountBtn.textContent='Кабинет';
+  let paySettings={data:null};try{paySettings=await supabase.from('academy_payment_settings').select('payment_method,recipient_name,phone,bank_name,account_details,payment_instructions').eq('id',true).maybeSingle()}catch(e){}
+  const ps=paySettings?.data||{}, recipient=ps.recipient_name||'Перевод по номеру телефона', phone=ps.phone||'+7 900 273-94-45', bank=ps.bank_name||'Сбербанк';
+  const method=({sbp_business:'СБП / перевод по телефону',bank_transfer:'Банковские реквизиты',card_transfer:'Перевод на карту'})[ps.payment_method]||'Перевод по телефону';
+  const instructions=ps.payment_instructions||'Переведите точную сумму через приложение банка. Перед переводом проверьте имя получателя. В комментарии укажите номер заказа.';
+  const amount=Number(order.amount_rub||0).toLocaleString('ru-RU');
+  const notice=document.getElementById('paymentNotice');
+  if(notice){notice.innerHTML='<b>Заказ создан ✓</b><p>Курс: '+esc(d?.title||'Обучение')+'</p><p>Сумма к оплате: <b>'+amount+' ₽</b></p><p>Номер заказа: <b>'+esc(order.id)+'</b></p><hr><p>Получатель: <b>'+esc(recipient)+'</b></p><p>Способ: '+esc(method)+'</p><p>Телефон: <b>'+esc(phone)+'</b></p><p>Банк: <b>'+esc(bank)+'</b></p>'+(ps.account_details?'<p>Дополнительные реквизиты: <b>'+esc(ps.account_details)+'</b></p>':'')+'<p>'+esc(instructions)+'</p><p>После перевода нажмите «Я перевёл деньги» в карточке заказа. Доступ откроется после ручного подтверждения владельцем.</p>';notice.style.display='block';}
+  const {data:{user:currentUser}}=await supabase.auth.getUser();
+  if(currentUser){try{await loadCabinet(currentUser)}catch(e){const intro=document.getElementById('cabinetIntro');if(intro)intro.textContent='Заказ создан. Реквизиты для оплаты показаны выше. История покупок временно не загрузилась; обновите страницу позже.';}}
+  if(typeof activateStudentTab==='function')activateStudentTab('orders');
+  const history=document.getElementById('purchaseHistory');
+  if(history){const cards=history.querySelectorAll('.cabCard');const matching=[...cards].find(card=>card.textContent.includes(String(order.id).slice(0,8).toUpperCase()));if(matching){matching.id='newPaymentOrder';matching.scrollIntoView({behavior:'smooth',block:'center'});matching.style.outline='2px solid #b79b69';matching.style.outlineOffset='4px';}else history.scrollIntoView({behavior:'smooth',block:'start'});}
+  window.setTimeout(()=>{const target=document.getElementById('newPaymentOrder')||document.getElementById('studentTab-orders');target?.scrollIntoView({behavior:'smooth',block:'start'});},120);
 };
 </script>
 <div id="masterCertificateMount"></div><div id="publicProfileMount"></div>
