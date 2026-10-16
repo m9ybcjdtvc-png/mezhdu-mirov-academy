@@ -840,7 +840,8 @@ async function renderAdminEditor(){
 
 async function renderAdminPayments(){
  const settingsStatus=document.getElementById('paymentSettingsStatus');
- const settingsResult=await supabase.from('academy_payment_settings').select('*').eq('id',true).maybeSingle();
+ let settingsResult={data:null,error:null};
+ try{settingsResult=await supabase.from('academy_payment_settings').select('*').eq('id',true).maybeSingle()}catch(e){settingsResult={data:null,error:e};}
  const st=settingsResult.data||{};
  const method=document.getElementById('payMethodInput'); if(method)method.value=st.payment_method||'sbp_business';
  const recipient=document.getElementById('payRecipientInput'); if(recipient)recipient.value=st.recipient_name||'';
@@ -851,11 +852,14 @@ async function renderAdminPayments(){
  if(settingsResult.error&&settingsStatus)settingsStatus.textContent='Не удалось загрузить реквизиты: '+esc(settingsResult.error.message);
  const box=document.getElementById('adminPaymentOrders'); if(!box)return;
  box.innerHTML='<div class="adminNotice">Загружаю заказы…</div>';
- const [ordersResult,coursesResult,profilesResult]=await Promise.all([
-  supabase.from('payment_orders').select('id,user_id,course_id,amount_rub,status,created_at,paid_at').order('created_at',{ascending:false}),
-  supabase.from('courses').select('id,title'),
-  supabase.from('profiles').select('id,full_name,phone')
- ]);
+ let ordersResult,coursesResult,profilesResult;
+ try{
+  [ordersResult,coursesResult,profilesResult]=await Promise.all([
+   supabase.from('payment_orders').select('id,user_id,course_id,amount_rub,status,created_at,paid_at').order('created_at',{ascending:false}),
+   supabase.from('courses').select('id,title'),
+   supabase.from('profiles').select('id,full_name,phone')
+  ]);
+ }catch(e){box.innerHTML='<div class="adminNotice">Не удалось загрузить список оплат. Обновите страницу и попробуйте снова. '+esc(e&&e.message||'Ошибка соединения')+'</div>';return}
  if(ordersResult.error){box.innerHTML='<div class="adminNotice">Не удалось загрузить заказы: '+esc(ordersResult.error.message)+'</div>';return}
  const courses=new Map((coursesResult.data||[]).map(x=>[x.id,x.title]));
  const profiles=new Map((profilesResult.data||[]).map(x=>[x.id,x]));
@@ -863,11 +867,11 @@ async function renderAdminPayments(){
  const rows=ordersResult.data||[];
  box.innerHTML=rows.length?'<table class="adminTable"><thead><tr><th>Заказ</th><th>Ученик</th><th>Курс</th><th>Сумма</th><th>Статус</th><th>Создан</th><th>Действие</th></tr></thead><tbody>'+rows.map(o=>{
   const p=profiles.get(o.user_id)||{};
-  const action=o.status==='payment_reported'?'<button class="miniBtn" data-confirm-payment="'+o.id+'">Подтвердить оплату</button>':(o.status==='pending'?'<span>Ожидаем перевод</span>':(o.status==='paid'?'✓ Готово':'—'));
+  const action=['pending','payment_reported'].includes(o.status)?'<button class="miniBtn" data-confirm-payment="'+o.id+'">Одобрено · открыть курс</button>':(o.status==='paid'?'✓ Доступ открыт':'—');
   return '<tr><td>'+esc(String(o.id).slice(0,8).toUpperCase())+'</td><td><b>'+esc(p.full_name||'Ученик')+'</b><br>'+esc(p.phone||'')+'</td><td>'+esc(courses.get(o.course_id)||'Курс')+'</td><td>'+Number(o.amount_rub||0).toLocaleString('ru-RU')+' ₽</td><td><span class="statusDot '+(o.status==='paid'?'on':'')+'">'+esc(labels[o.status]||o.status)+'</span></td><td>'+new Date(o.created_at).toLocaleDateString('ru-RU')+'</td><td>'+action+'</td></tr>';
  }).join('')+'</tbody></table>':'<div class="emptyCourse"><h4>Заказов пока нет</h4><p>Новые заказы учеников появятся здесь.</p></div>';
  box.querySelectorAll('[data-confirm-payment]').forEach(btn=>btn.onclick=async()=>{
-  if(!confirm('Подтверди, что деньги действительно поступили на счёт. После этого ученику откроется курс.'))return;
+  if(!confirm('Проверь SMS и историю операций в приложении банка. Если деньги действительно поступили, нажми OK — ученику откроется курс.'))return;
   btn.disabled=true;btn.textContent='Проверяем…';
   const {error}=await supabase.rpc('confirm_manual_payment',{p_order_id:btn.dataset.confirmPayment});
   if(error){btn.disabled=false;btn.textContent='Подтвердить оплату';if(settingsStatus)settingsStatus.textContent='Не удалось подтвердить: '+esc(error.message);return}
@@ -1036,7 +1040,7 @@ async function loadCabinet(user){
   const orderIds=[...new Set((orders||[]).map(o=>o.course_id).filter(Boolean))];
   const orderCourses={};
   if(orderIds.length){const cr=await supabase.from('courses').select('id,title,level').in('id',orderIds);(cr.data||[]).forEach(c=>orderCourses[c.id]=c);}
-  const paymentSettingsResult=await supabase.from('academy_payment_settings').select('payment_method,recipient_name,phone,bank_name,account_details,payment_instructions').eq('id',true).maybeSingle(); const paymentSettings=paymentSettingsResult.data||{payment_method:'sbp_business',phone:'+7 900 273-94-45',bank_name:'Сбербанк',payment_instructions:'Перед переводом проверьте имя получателя в приложении банка. В комментарии укажите номер заказа.'}; if(!paymentSettings.phone)paymentSettings.phone='+7 900 273-94-45'; if(!paymentSettings.bank_name)paymentSettings.bank_name='Сбербанк'; if(!paymentSettings.payment_method)paymentSettings.payment_method='sbp_business'; const statusLabels={pending:'Ожидает оплаты',payment_reported:'Вы сообщили об оплате — ждём проверку',paid:'Оплачено',failed:'Не удалось оплатить',cancelled:'Отменён'};
+  let paymentSettingsResult={data:null,error:null};try{paymentSettingsResult=await supabase.from('academy_payment_settings').select('payment_method,recipient_name,phone,bank_name,account_details,payment_instructions').eq('id',true).maybeSingle()}catch(e){paymentSettingsResult={data:null,error:e}} const paymentSettings=paymentSettingsResult.data||{payment_method:'sbp_business',phone:'+7 900 273-94-45',bank_name:'Сбербанк',payment_instructions:'Перед переводом проверьте имя получателя в приложении банка. В комментарии укажите номер заказа.'}; if(!paymentSettings.phone)paymentSettings.phone='+7 900 273-94-45'; if(!paymentSettings.bank_name)paymentSettings.bank_name='Сбербанк'; if(!paymentSettings.payment_method)paymentSettings.payment_method='sbp_business'; const statusLabels={pending:'Ожидает оплаты',payment_reported:'Вы сообщили об оплате — ждём проверку',paid:'Оплачено',failed:'Не удалось оплатить',cancelled:'Отменён'};
   document.getElementById('purchaseHistory').innerHTML=ordersError?'<div class="adminNotice">Не удалось загрузить покупки: '+esc(ordersError.message)+'</div>':(orders||[]).length?(orders||[]).map(o=>'<article class="cabCard"><span class="num">ЗАКАЗ · '+esc(String(o.id).slice(0,8).toUpperCase())+'</span><h4>'+esc(orderCourses[o.course_id]?.title||'Программа академии')+'</h4><p><b>Статус:</b> '+esc(statusLabels[o.status]||o.status)+'</p><p><b>Сумма:</b> '+(o.amount_rub==null?'—':Number(o.amount_rub).toLocaleString('ru-RU')+' ₽')+'</p><p><b>Дата:</b> '+new Date(o.created_at).toLocaleDateString('ru-RU')+'</p>'+(o.paid_at?'<p><b>Оплачено:</b> '+new Date(o.paid_at).toLocaleDateString('ru-RU')+'</p>':'')+(['pending','payment_reported'].includes(o.status)?'<div class="paymentNotice"><b>Оплата переводом</b><p>Получатель: '+esc(paymentSettings.recipient_name||'Реквизиты ещё не настроены')+'</p><p>Способ: '+esc(({sbp_business:'СБП / перевод по телефону',bank_transfer:'Банковские реквизиты',card_transfer:'Перевод на карту'})[paymentSettings.payment_method]||'Банковский перевод')+'</p>'+(paymentSettings.phone?'<p>Телефон: <b>'+esc(paymentSettings.phone)+'</b></p>':'')+(paymentSettings.bank_name?'<p>Банк: '+esc(paymentSettings.bank_name)+'</p>':'')+(paymentSettings.account_details?'<p>Реквизиты: <b>'+esc(paymentSettings.account_details)+'</b></p>':'')+(paymentSettings.payment_instructions?'<p>'+esc(paymentSettings.payment_instructions)+'</p>':'')+'<p>В комментарии к переводу укажи номер заказа: <b>'+esc(String(o.id))+'</b>.</p>'+(o.status==='pending'?'<button class="miniBtn" data-report-payment="'+o.id+'">Я перевёл деньги</button>':'<span>Спасибо. Владелец проверит поступление и откроет доступ.</span>')+'</div>':'')+'</article>').join(''):'<div class="emptyCourse"><span class="num">ИСТОРИЯ ПОКУПОК</span><h4>Пока нет оформленных заказов</h4><p>Здесь отображаются выбранные программы, сумма, дата заказа и статус оплаты. Оплата выполняется переводом по реквизитам, а доступ открывается после ручного подтверждения владельцем.</p><a class="btn" href="#courses">Посмотреть программы</a></div>';
   document.getElementById('cabinetPanel').classList.add('show');
   document.querySelectorAll('[data-report-payment]').forEach(btn=>btn.onclick=async()=>{btn.disabled=true;btn.textContent='Отправляем…';const {error}=await supabase.rpc('report_manual_payment',{p_order_id:btn.dataset.reportPayment});if(error){btn.disabled=false;btn.textContent='Я перевёл деньги';alert('Не удалось сообщить об оплате: '+error.message);return}const notice=document.getElementById('paymentNotice');if(notice){notice.style.display='block';notice.textContent='Спасибо! Отметка об оплате отправлена владельцу. Доступ откроется после проверки поступления.'}await loadCabinet(user)});
