@@ -1272,7 +1272,7 @@ courseBuy.onclick=async()=>{const code=courseBuy.dataset.course;const d=courseDa
  courseBuy.disabled=true; courseBuy.textContent='Создаём заказ…';
  let orderResult;
   try{orderResult=await supabase.rpc('create_payment_order',{p_course_id:courseId});}catch(err){orderResult={data:null,error:err};}
-  courseBuy.disabled=false; courseBuy.textContent='Начать обучение';
+  courseBuy.disabled=false; courseBuy.textContent='Записаться и оформить заказ';
   const error=orderResult?.error; const rawOrder=orderResult?.data;
   const order=Array.isArray(rawOrder)?rawOrder[0]:(rawOrder?.order||rawOrder?.data||rawOrder);
   if(error||!order||!order.id){const e=String(error?.message||'');msg.textContent=e.includes('ALREADY_ENROLLED')?'У вас уже есть доступ к этому курсу.':e.includes('COURSE_PRICE_NOT_SET')?'Продажа этого курса временно недоступна: цена ещё не установлена.':e.includes('COURSE_CONTENT_NOT_READY')?'Курс ещё готовится: уроки пока не опубликованы.':e.includes('AUTH_REQUIRED')?'Войдите в аккаунт, чтобы оформить заказ.':('Не удалось создать заказ. '+(e||'Сервер не вернул номер заказа. Попробуйте ещё раз.'));return}
@@ -1280,12 +1280,12 @@ courseBuy.onclick=async()=>{const code=courseBuy.dataset.course;const d=courseDa
   const cabinet=document.getElementById('cabinetPanel'); if(cabinet)cabinet.classList.add('show');
   accountBtn.textContent='Кабинет';
   let paySettings={data:null};try{paySettings=await supabase.from('academy_payment_settings').select('payment_method,recipient_name,phone,bank_name,account_details,payment_instructions').eq('id',true).maybeSingle()}catch(e){}
-  const ps=paySettings?.data||{}, recipient=ps.recipient_name||'Перевод по номеру телефона', phone=ps.phone||'+7 900 273-94-45', bank=ps.bank_name||'Сбербанк';
+  const ps=paySettings?.data||{}, recipient=ps.recipient_name||'', phone=ps.phone||'', bank=ps.bank_name||'';
   const method=({sbp_business:'СБП / перевод по телефону',bank_transfer:'Банковские реквизиты',card_transfer:'Перевод на карту'})[ps.payment_method]||'Перевод по телефону';
   const instructions=ps.payment_instructions||'Переведите точную сумму через приложение банка. Перед переводом проверьте имя получателя. В комментарии укажите номер заказа.';
   const amount=Number(order.amount_rub||0).toLocaleString('ru-RU');
   const notice=document.getElementById('paymentNotice');
-  if(notice){notice.innerHTML='<b>Заказ создан ✓</b><p>Курс: '+esc(d?.title||'Обучение')+'</p><p>Сумма к оплате: <b>'+amount+' ₽</b></p><p>Номер заказа: <b>'+esc(order.id)+'</b></p><hr><p>Получатель: <b>'+esc(recipient)+'</b></p><p>Способ: '+esc(method)+'</p><p>Телефон: <b>'+esc(phone)+'</b></p><p>Банк: <b>'+esc(bank)+'</b></p>'+(ps.account_details?'<p>Дополнительные реквизиты: <b>'+esc(ps.account_details)+'</b></p>':'')+'<p>'+esc(instructions)+'</p><p>После перевода нажмите «Я перевёл деньги» в карточке заказа. Доступ откроется после ручного подтверждения владельцем.</p>';notice.style.display='block';}
+  if(notice){const paymentReady=Boolean(recipient&&(phone||ps.account_details));notice.innerHTML='<b>Заявка на курс создана ✓</b><p>Курс: '+esc(d?.title||'Обучение')+'</p><p>Сумма: <b>'+amount+' ₽</b></p><p>Номер заказа: <b>'+esc(order.id)+'</b></p><hr>'+(paymentReady?'<p>Получатель: <b>'+esc(recipient)+'</b></p><p>Способ: '+esc(method)+'</p>'+(phone?'<p>Телефон: <b>'+esc(phone)+'</b></p>':'')+(bank?'<p>Банк: <b>'+esc(bank)+'</b></p>':'')+(ps.account_details?'<p>Реквизиты: <b>'+esc(ps.account_details)+'</b></p>':'')+'<p>'+esc(instructions)+'</p><p>После перевода нажмите «Я перевёл деньги» в карточке заказа. Доступ откроется после подтверждения владельцем.</p>':'<p><b>Оплата ещё не настроена.</b> Пожалуйста, не переводите деньги по реквизитам из старых сообщений. Администратору нужно указать и проверить способ оплаты в панели владельца, затем можно будет завершить заказ.');notice.style.display='block';}
   const {data:{user:currentUser}}=await supabase.auth.getUser();
   if(currentUser){try{await loadCabinet(currentUser)}catch(e){const intro=document.getElementById('cabinetIntro');if(intro)intro.textContent='Заказ создан. Реквизиты для оплаты показаны выше. История покупок временно не загрузилась; обновите страницу позже.';}}
   if(typeof activateStudentTab==='function')activateStudentTab('orders');
