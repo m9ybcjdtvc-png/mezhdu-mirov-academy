@@ -1567,5 +1567,56 @@ html,body{max-width:100%;overflow-x:clip}
 })();
 </script>
 
+
+<style id="mmConnectedNavigation">
+html{scroll-padding-top:100px}
+section[id]{scroll-margin-top:100px}
+@media(max-width:640px){
+  .nav .links{display:flex!important;order:3!important;flex:1 0 100%!important;width:100%!important;gap:16px!important;padding:10px 2px 7px!important;overflow-x:auto!important;white-space:nowrap!important;scrollbar-width:none!important;overscroll-behavior-x:contain}
+  .nav .links::-webkit-scrollbar{display:none!important}
+  .nav .links a{display:inline-flex!important;flex:0 0 auto!important;font-size:12px!important;padding:5px 0!important}
+  .navin{flex-wrap:wrap!important}
+}
+</style>
+<script id="mmConnectedLinks">
+(function(){
+  function wireLinks(){
+    document.querySelectorAll('a[href="#"]').forEach(function(a){
+      if(a.classList.contains('logo')){
+        a.setAttribute('aria-label','МЕЖДУ МИРОВ — на главную');
+        a.addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});
+      } else if(a.classList.contains('story')){
+        a.setAttribute('href','#courses');
+        a.removeAttribute('target');
+      }
+    });
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){
+      var href=a.getAttribute('href');
+      if(!href || href==='#')return;
+      var target=document.getElementById(decodeURIComponent(href.slice(1)));
+      if(!target){
+        a.setAttribute('href','#courses');
+        target=document.getElementById('courses');
+      }
+      if(target){
+        a.addEventListener('click',function(e){
+          if(e.defaultPrevented)return;
+          e.preventDefault();
+          target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+          if(history.replaceState)history.replaceState(null,'',href);
+        });
+      }
+    });
+    document.querySelectorAll('a[target="_blank"]').forEach(function(a){
+      var rel=(a.getAttribute('rel')||'').split(/\s+/).filter(Boolean);
+      if(!rel.includes('noopener'))rel.push('noopener');
+      if(!rel.includes('noreferrer'))rel.push('noreferrer');
+      a.setAttribute('rel',rel.join(' '));
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wireLinks,{once:true});else wireLinks();
+})();
+</script>
+
 </body>
 </html>
